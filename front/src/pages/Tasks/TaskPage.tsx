@@ -3,6 +3,7 @@ import Api from '../../../api'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { taskCache } from './cache'
+import { CreateTaskResultDto, TaskType } from './types'
 
 function TaskPage() {
   const { courseId, taskId } = useParams()
@@ -11,6 +12,9 @@ function TaskPage() {
     id: string
     title: string
     text: string
+    minListItemsCount?: number
+    maxListItemsCount?: number
+    type: TaskType
   } | null>(null)
   const navigate = useNavigate()
 
@@ -41,10 +45,12 @@ function TaskPage() {
 
   const handleSubmit = async () => {
     try {
-      await Api.createTaskResult({
+      let answerDto: CreateTaskResultDto = {
         taskId: task?.id!,
-        text: answer,
-      })
+      }
+      answerDto = fillAnswerByType(answerDto)
+
+      await Api.createTaskResult(answerDto)
       navigate(`/tasks/${courseId}`)
     } catch {
       toast({
@@ -53,6 +59,41 @@ function TaskPage() {
         variant: 'error',
       })
     }
+  }
+
+  const fillAnswerByType = (answerDto: CreateTaskResultDto): CreateTaskResultDto => {
+    if (task?.type === TaskType.Text) {
+      answerDto.text = answer
+    }
+    if (task?.type === TaskType.TextList) {
+      answerDto.listItems = answer.split(',').map((item) => item.trim())
+    }
+    return answerDto
+  }
+
+  const renderAnswerInput = () => {
+    console.log(task)
+    if (task?.type === TaskType.Text) {
+      return (
+        <textarea
+          value={answer}
+          onChange={(e) => setAnswer(e.target.value)}
+          className='w-full h-48 p-4 rounded-lg bg-boxdark-2 border border-gray-600 focus:border-gray-400 outline-none text-gray-100 resize-none'
+          placeholder='Введите ваш ответ...'
+        />
+      )
+    }
+    if (task?.type === TaskType.TextList) {
+      return (
+        <textarea
+          value={answer}
+          onChange={(e) => setAnswer(e.target.value)}
+          className='w-full h-48 p-4 rounded-lg bg-boxdark-2 border border-gray-600 focus:border-gray-400 outline-none text-gray-100 resize-none'
+          placeholder='Введите ваш ответ, разделяйте запятой...'
+        />
+      )
+    }
+    return null
   }
 
   if (!task) return <div className='p-6 text-gray-300'>Загрузка...</div>
@@ -64,12 +105,7 @@ function TaskPage() {
 
         <p className='text-gray-300 mb-6 whitespace-pre-line'>{task.text}</p>
 
-        <textarea
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-          className='w-full h-48 p-4 rounded-lg bg-boxdark-2 border border-gray-600 focus:border-gray-400 outline-none text-gray-100 resize-none'
-          placeholder='Введите ваш ответ...'
-        />
+        {renderAnswerInput()}
 
         <button
           onClick={handleSubmit}

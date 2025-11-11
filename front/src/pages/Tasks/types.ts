@@ -12,7 +12,7 @@ export interface Task {
 
 export interface CreateTaskResultDto {
     taskId: string;
-    text: string;
+    text?: string;
     listItems?: string[];
 }
 
