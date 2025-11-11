@@ -22,9 +22,18 @@ public class TaskResultsController : ControllerBase
         if (headersData == null)
             return Unauthorized();
 
+        if (!string.IsNullOrEmpty(dto.Text) && dto.ListItems.Count != 0)
+            return BadRequest("Нельзя мешать ответы для конкретного типа задания");
+
         var task = await _dbContext.Tasks.FirstOrDefaultAsync(x => x.Id == dto.TaskId);
         if (task == null)
             return NotFound("Задание не найдено");
+
+        if (task.Type == TaskType.TextList && dto.ListItems.Count == 0)
+            return BadRequest("Нельзя не вводить список элементов для задания такого типа");
+
+        if (task.Type == TaskType.Text && string.IsNullOrEmpty(dto.Text))
+            return BadRequest("Нельзя не вводить текст для задания такого типа");
 
         var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.TelegramId == headersData.TelegramId);
 
@@ -33,6 +42,7 @@ public class TaskResultsController : ControllerBase
             UserId = user.Id,
             TaskId = dto.TaskId,
             Text = dto.Text,
+            ListItems = dto.ListItems,
         };
 
         await _dbContext.TaskResults.AddAsync(taskResult);
@@ -45,5 +55,6 @@ public class TaskResultsController : ControllerBase
     {
         public Guid TaskId { get; set; }
         public string Text { get; set; }
+        public List<string> ListItems { get; set; } = [];
     }
 }

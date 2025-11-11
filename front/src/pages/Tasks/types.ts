@@ -13,6 +13,7 @@ export interface Task {
 export interface CreateTaskResultDto {
     taskId: string;
     text: string;
+    listItems?: string[];
 }
 
 export enum TaskType
