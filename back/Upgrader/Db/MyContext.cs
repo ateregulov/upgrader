@@ -1,4 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Upgrader.Features.Courses;
+using Upgrader.Features.Tasks;
+using Upgrader.Features.Transactions;
 using Upgrader.Users;
 
 public class MyContext : DbContext
@@ -7,6 +10,11 @@ public class MyContext : DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<TgProfile> TgProfiles { get; set; }
+    public DbSet<Transaction> Transactions { get; set; }
+    public DbSet<Course> Courses { get; set; }
+    public DbSet<Upgrader.Features.Tasks.Task> Tasks { get; set; }
+    public DbSet<TaskResult> TaskResults { get; set; }
+    public DbSet<TaskResultImage> TaskResultsImages { get; set; }
 
     public MyContext(DbContextOptions<MyContext> options, IConfiguration configuration)
         : base(options)
@@ -21,6 +29,8 @@ public class MyContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(MyContext).Assembly);
+
         modelBuilder.Entity<TgProfile>(entity =>
         {
             entity.HasKey(tp => tp.TelegramId);
