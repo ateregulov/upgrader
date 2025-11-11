@@ -31,11 +31,12 @@ function Courses() {
   }
 
   return (
-    <div className='flex-1 flex flex-col items-center justify-center px-8'>
+    <div className='w-full'>
       <h1 className='text-3xl font-bold mb-8'>Выберите курс</h1>
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-5xl'>
+
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
         {courses.map((course) => (
-          <CourseCard onClick={handleCourseClick} key={course.id} course={course} />
+          <CourseCard key={course.id} course={course} onClick={handleCourseClick} />
         ))}
       </div>
     </div>
