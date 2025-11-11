@@ -2,6 +2,7 @@ import { toast } from '@/hooks/use-toast'
 import Api from '../../../api'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { taskCache } from './cache'
 
 function TaskPage() {
   const { courseId, taskId } = useParams()
@@ -16,6 +17,12 @@ function TaskPage() {
   useEffect(() => {
     if (!taskId) return 
 
+    const cachedTask = taskCache.get(taskId!)
+    if (cachedTask) {
+      setTask(cachedTask)
+      return
+    }
+    
     loadTask()
   }, [taskId])
 
