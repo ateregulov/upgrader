@@ -4,7 +4,7 @@ import Loader from '@/common/Loader'
 import PageTitle from '@/components/PageTitle'
 import DefaultLayout from './layout/DefaultLayout'
 import StartScreenLayout from './layout/StartScreenLayout'
-import StartScreen from './pages/StartScreen'
+import StartScreen from './pages/StartScreen/StartScreen'
 
 import { ToastProvider, ToastViewport } from './components/toast'
 import { ToastContainer } from './hooks/use-toast'
