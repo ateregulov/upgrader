@@ -11,6 +11,10 @@ public class Task
     public Course Course { get; set; }
     public int Order { get; set; }
     public List<TaskResult> Results { get; set; }
+    // if task waiting result as list of items
+    public int? MinListItemsCount { get; set; }
+    public int? MaxListItemsCount { get; set; }
+    public TaskType Type { get; set; } = TaskType.Text;
 
     [Required]
     public string Title { get; set; }
@@ -20,4 +24,10 @@ public class Task
 
     [NotMapped]
     public bool IsUnlocked { get; set; }
+}
+
+public enum TaskType
+{
+    Text = 10,
+    TextList = 20,
 }

@@ -12,6 +12,7 @@ public class TaskResult
     public Guid TaskId { get; set; }
     public Task Task { get; set; }
     public string Text { get; set; }
+    public List<string> ListItems { get; set; } = [];
     public List<TaskResultImage> Images { get; set; } = [];
     public DateTimeOffset Created { get; set; } = DateTimeOffset.UtcNow;
 }

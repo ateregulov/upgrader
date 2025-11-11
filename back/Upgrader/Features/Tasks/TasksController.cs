@@ -37,6 +37,9 @@ public class TasksController : ControllerBase
                 Order = x.Order,
                 Title = x.Title,
                 Text = x.Text,
+                Type = x.Type,
+                MaxListItemsCount = x.MaxListItemsCount,
+                MinListItemsCount = x.MinListItemsCount,
                 IsUnlocked = x.Results.Where(x => x.UserId == user.Id).Any(),
             })
             .ToListAsync();
