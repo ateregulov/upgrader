@@ -2,7 +2,7 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import config from './config'
 import { apiInstance } from './axiosConfig'
 import { Course } from '@/pages/StartScreen/types'
-import { Task } from '@/pages/Tasks/types'
+import { CreateTaskResultDto, Task } from '@/pages/Tasks/types'
 
 const { ApiUrl } = config
 
@@ -91,6 +91,12 @@ const Api = {
     BaseApi.get<Course[]>('api/courses'),
 
   getTasks: async(courseId: string): Promise<Task[]> =>
-    BaseApi.get<Task[]>(`api/tasks/${courseId}`),
+    BaseApi.get<Task[]>(`api/tasks?courseId=${courseId}`),
+
+  getTask: async(taskId: string): Promise<Task> =>
+    BaseApi.get<Task>(`api/tasks/${taskId}`),
+
+  createTaskResult: async(dto: CreateTaskResultDto): Promise<void> =>
+    BaseApi.post<void>(`api/task-results`, dto),
 }
 export default Api

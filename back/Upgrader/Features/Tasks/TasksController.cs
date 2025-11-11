@@ -15,7 +15,7 @@ public class TasksController : ControllerBase
         _dbContext = dbContext;
     }
 
-    [HttpGet("{courseId}")]
+    [HttpGet]
     public async Task<IActionResult> GetTasks(Guid courseId)
     {
         var headersData = await this.GetHeadersData();
@@ -51,5 +51,19 @@ public class TasksController : ControllerBase
             tasks[maxOrderUnlocked].IsUnlocked = true;
 
         return Ok(tasks);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetTask(Guid id)
+    {
+        var headersData = await this.GetHeadersData();
+        if (headersData == null)
+            return Unauthorized();
+
+        var task = await _dbContext.Tasks.FirstOrDefaultAsync(x => x.Id == id);
+        if (task == null)
+            return NotFound("Задание не найдено");
+
+        return Ok(task);
     }
 }
