@@ -8,7 +8,7 @@ interface TaskCardProps {
 function TaskCard({ task, onClick }: TaskCardProps) {
   return (
     <div
-      onClick={() => onClick?.(task.id)}
+      onClick={() => task.isUnlocked && onClick?.(task.id)}
       key={task.id}
       className={`flex-shrink-0 w-64 p-4 rounded-lg transition-colors cursor-pointer 
         ${task.isUnlocked ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-700 opacity-50 cursor-not-allowed'}`}
