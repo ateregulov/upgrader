@@ -6,3 +6,8 @@ export interface Task {
     text: string;
     isUnlocked: boolean;
 }
+
+export interface CreateTaskResultDto {
+    taskId: string;
+    text: string;
+}
