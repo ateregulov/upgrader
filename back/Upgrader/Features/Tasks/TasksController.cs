@@ -1,0 +1,55 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Upgrader.Auth;
+
+namespace Upgrader.Features.Tasks;
+
+[ApiController]
+[Route("api/tasks")]
+public class TasksController : ControllerBase
+{
+    private readonly MyContext _dbContext;
+
+    public TasksController(MyContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
+    [HttpGet("{courseId}")]
+    public async Task<IActionResult> GetTasks(Guid courseId)
+    {
+        var headersData = await this.GetHeadersData();
+        if (headersData == null)
+            return Unauthorized();
+
+        var course = await _dbContext.Courses.FirstOrDefaultAsync(x => x.Id == courseId);
+        if (course == null)
+            return NotFound("Курс не найден");
+
+        var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.TelegramId == headersData.TelegramId);
+
+        var tasks = await _dbContext
+            .Tasks.Where(x => x.CourseId == courseId)
+            .Select(x => new Task
+            {
+                Id = x.Id,
+                CourseId = x.CourseId,
+                Order = x.Order,
+                Title = x.Title,
+                Text = x.Text,
+                IsUnlocked = x.Results.Where(x => x.UserId == user.Id).Any(),
+            })
+            .ToListAsync();
+
+        var maxOrderUnlocked = tasks
+            .Where(x => x.IsUnlocked)
+            .Select(x => x.Order)
+            .DefaultIfEmpty(0)
+            .Max();
+
+        if (tasks.Count > 0 && tasks.Count + 1 > maxOrderUnlocked)
+            tasks[maxOrderUnlocked].IsUnlocked = true;
+
+        return Ok(tasks);
+    }
+}
