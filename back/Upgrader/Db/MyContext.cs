@@ -15,6 +15,7 @@ public class MyContext : DbContext
     public DbSet<Upgrader.Features.Tasks.Task> Tasks { get; set; }
     public DbSet<TaskResult> TaskResults { get; set; }
     public DbSet<TaskResultImage> TaskResultsImages { get; set; }
+    public DbSet<CoursePurchase> CoursePurchases { get; set; }
 
     public MyContext(DbContextOptions<MyContext> options, IConfiguration configuration)
         : base(options)

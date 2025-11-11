@@ -16,4 +16,5 @@ public class Course
     [Required]
     public string LongDescription { get; set; }
     public decimal Price { get; set; }
+    public List<CoursePurchase> Purchases { get; set; } = [];
 }
