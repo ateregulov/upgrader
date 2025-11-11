@@ -9,6 +9,7 @@ import StartScreen from './pages/StartScreen/StartScreen'
 import { ToastProvider, ToastViewport } from './components/toast'
 import { ToastContainer } from './hooks/use-toast'
 import CourseTasks from './pages/Tasks/CourseTasks'
+import Courses from './pages/Courses/Courses'
 
 
 function App() {
@@ -37,6 +38,15 @@ function App() {
               <PageTitle title='Start Screen' />
               <StartScreen />
             </StartScreenLayout>
+          }
+        />
+        <Route
+          path='/courses'
+          element={
+            <DefaultLayout>
+              <PageTitle title='Courses' />
+              <Courses />
+            </DefaultLayout>
           }
         />
         <Route
