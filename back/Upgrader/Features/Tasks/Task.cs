@@ -19,5 +19,5 @@ public class Task
     public string Text { get; set; }
 
     [NotMapped]
-    public bool IsCompeted { get; set; }
+    public bool IsUnlocked { get; set; }
 }
