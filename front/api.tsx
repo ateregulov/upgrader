@@ -1,10 +1,9 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import config from './config'
 import { apiInstance } from './axiosConfig'
+import { Course } from '@/pages/StartScreen/types'
 
 const { ApiUrl } = config
-
-import { FrontendLog } from '@/services/errorService'
 
 const convertDateToServer = (date: Date): string => date.toISOString()
 
@@ -86,44 +85,8 @@ interface NodeUrl {
 const Api = {
   ApiUrl,
   errorHandler,
-    
-  createFrontendLog: async(error: FrontendLog): Promise<void> =>
-    BaseApi.post<void>('api/frontendLog', error),
 
-  ping: async(): Promise<void> =>
-    BaseApi.get<void>('api/health/ping'),
-
-  // Профиль слушателя
-  getHearerProfile: async(): Promise<any> =>
-    BaseApi.get<any>('api/hearer/profile'),
-
-  createHearerProfile: async(profile: any): Promise<void> =>
-    BaseApi.post<void>('api/hearer/profile', profile),
-
-  updateHearerProfile: async(profile: any): Promise<void> =>
-    BaseApi.put<void>('api/hearer/profile', profile),
-
-  getProfileProgress: async(): Promise<any> =>
-    BaseApi.get<any>('api/hearer/profile/progress'),
-
-  uploadMyPhoto: async(file: File): Promise<void> => {
-    const formData = new FormData();
-    formData.append('file', file);
-    return BaseApi.post<void>('api/hearer/photo/my', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-  },
-
-  getMyPhoto: async(): Promise<string> => {
-    const response = await apiInstance.get(getUrl('api/hearer/photo/my'), {
-      responseType: 'blob',
-    });
-    return URL.createObjectURL(response.data);
-  },
-
-  deleteMyPhoto: async(): Promise<void> =>
-    BaseApi.delete('api/hearer/photo/my'),
+  getCourses: async(): Promise<Course[]> =>
+    BaseApi.get<Course[]>('api/courses'),
 }
 export default Api
