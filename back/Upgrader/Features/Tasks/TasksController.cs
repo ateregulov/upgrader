@@ -47,7 +47,7 @@ public class TasksController : ControllerBase
             .DefaultIfEmpty(0)
             .Max();
 
-        if (tasks.Count > 0 && tasks.Count + 1 > maxOrderUnlocked)
+        if (tasks.Count > 0 && tasks.Count > maxOrderUnlocked)
             tasks[maxOrderUnlocked].IsUnlocked = true;
 
         return Ok(tasks);
