@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { Task } from './types'
 import TaskCard from './TaskCard'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Api from '../../../api'
 import { toast } from '@/hooks/use-toast'
 
 const CourseTasksMock: React.FC = () => {
   const { courseId } = useParams()
   const [tasks, setTasks] = useState<Task[]>([])
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetchTasks()
@@ -28,13 +29,17 @@ const CourseTasksMock: React.FC = () => {
     }
   }
 
+  const handleTaskClick = (taskId: string) => {
+    navigate(`/tasks/${courseId}/${taskId}`)
+  }
+
   return (
     <div className='p-8'>
       <h1 className='text-2xl font-bold mb-6'>Задания курса</h1>
 
       <div className='flex gap-4 flex-wrap'>
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard onClick={handleTaskClick} key={task.id} task={task} />
         ))}
       </div>
     </div>

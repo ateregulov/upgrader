@@ -10,6 +10,7 @@ import { ToastProvider, ToastViewport } from './components/toast'
 import { ToastContainer } from './hooks/use-toast'
 import CourseTasks from './pages/Tasks/CourseTasks'
 import Courses from './pages/Courses/Courses'
+import TaskPage from './pages/Tasks/TaskPage'
 
 
 function App() {
@@ -55,6 +56,15 @@ function App() {
             <DefaultLayout>
               <PageTitle title='Course Tasks' />
               <CourseTasks />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path='/tasks/:courseId/:taskId'
+          element={
+            <DefaultLayout>
+              <PageTitle title='Task' />
+              <TaskPage />
             </DefaultLayout>
           }
         />
