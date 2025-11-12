@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrisAppBack.Other.Settings;
 using Upgrader.Db;
+using Upgrader.Features.Transactions;
 using Upgrader.Users;
 
 namespace Upgrader.Auth;
@@ -105,6 +106,8 @@ public class AuthMiddleware
 
                 if (user == null)
                 {
+                    var transactionService = context.RequestServices.GetService<TransactionService>();
+
                     user = new User
                     {
                         Id = Guid.NewGuid(),
@@ -125,6 +128,12 @@ public class AuthMiddleware
                     _dbContext.Users.Add(user);
                     _dbContext.TgProfiles.Add(tgProfile);
                     await _dbContext.SaveChangesAsync();
+                    await transactionService.CreateTransactionAsync(
+                        settings.BonusSettings.RegisterBonus,
+                        TransactionType.RegisterBonus,
+                        receiverId: user.Id,
+                        uniqueKey: $"registerBonus-{user}"
+                    );
                 }
 
                 headersData.UserId = user.Id;
