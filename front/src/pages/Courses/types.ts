@@ -4,4 +4,5 @@ export interface Course {
     shortDescription: string;
     longDescription: string;
     price: number;
+    isBought: boolean;
 }

@@ -1,16 +1,23 @@
-import { Course } from './types'
+import { Course } from '../Courses/types'
 
-interface courseCardProps {
+interface CourseCardProps {
   course: Course
   onClick?: (courseId: string) => void
 }
 
-function CourseCard({ course, onClick }: courseCardProps) {
+function CourseCard({ course, onClick }: CourseCardProps) {
   return (
-    <div onClick={() => onClick?.(course.id)} className='bg-gray-800 hover:bg-gray-700 p-4 rounded-lg cursor-pointer transition-colors'>
+    <div
+      onClick={() => onClick?.(course.id)}
+      className={`relative bg-gray-800 p-4 rounded-lg cursor-pointer transition-colors hover:bg-gray-700`}
+    >
+      {course.isBought && (
+        <span className='absolute top-2 right-2 bg-green-600 text-white text-xs px-2 py-1 rounded'>Куплен</span>
+      )}
+
       <h2 className='text-white text-xl font-semibold mb-2'>{course.title}</h2>
       <p className='text-gray-300 mb-2'>{course.shortDescription}</p>
-      <p className='text-gray-400 text-sm'>Цена: {course.price}₽</p>
+      <p className='text-gray-400 text-sm'>{course.isBought ? 'Уже в вашей библиотеке' : `Цена: ${course.price}₽`}</p>
     </div>
   )
 }

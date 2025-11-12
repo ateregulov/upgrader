@@ -3,7 +3,7 @@ import Api from '../../../api'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CourseCard from '../StartScreen/CourseCard'
-import { Course } from '../StartScreen/types'
+import { Course } from './types'
 
 function Courses() {
   const [courses, setCourses] = useState<Course[]>([])

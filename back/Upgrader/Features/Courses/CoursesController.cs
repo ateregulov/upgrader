@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Upgrader.Auth;
 
 namespace Upgrader.Features.Courses;
 
@@ -17,7 +18,25 @@ public class CoursesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetCourses()
     {
-        var courses = await _dbContext.Courses.ToListAsync();
+        var headersData = await this.GetHeadersData();
+        if (headersData == null)
+            return Unauthorized();
+
+        var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.TelegramId == headersData.TelegramId);
+
+        var courses = await _dbContext
+            .Courses.Select(x => new Course
+            {
+                Id = x.Id,
+                Title = x.Title,
+                ShortDescription = x.ShortDescription,
+                LongDescription = x.LongDescription,
+                Price = x.Price,
+                IsBought = x.Purchases.Any(x => x.UserId == user.Id),
+            })
+            .OrderByDescending(x => x.IsBought)
+            .ToListAsync();
+
         return Ok(courses);
     }
 }

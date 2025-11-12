@@ -1,7 +1,7 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import config from './config'
 import { apiInstance } from './axiosConfig'
-import { Course } from '@/pages/StartScreen/types'
+import { Course } from '@/pages/Courses/types'
 import { CreateTaskResultDto, Task } from '@/pages/Tasks/types'
 
 const { ApiUrl } = config
