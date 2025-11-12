@@ -39,4 +39,28 @@ public class CoursesController : ControllerBase
 
         return Ok(courses);
     }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetCourse(Guid id)
+    {
+        var headersData = await this.GetHeadersData();
+        if (headersData == null)
+            return Unauthorized();
+
+        var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.TelegramId == headersData.TelegramId);
+
+        var courses = await _dbContext
+            .Courses.Select(x => new Course
+            {
+                Id = x.Id,
+                Title = x.Title,
+                ShortDescription = x.ShortDescription,
+                LongDescription = x.LongDescription,
+                Price = x.Price,
+                IsBought = x.Purchases.Any(x => x.UserId == user.Id),
+            })
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        return Ok(courses);
+    }
 }

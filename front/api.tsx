@@ -90,6 +90,9 @@ const Api = {
   getCourses: async(): Promise<Course[]> =>
     BaseApi.get<Course[]>('api/courses'),
 
+  getCourseById: async(id: string): Promise<Course> =>
+    BaseApi.get<Course>(`api/courses/${id}`),
+
   getTasks: async(courseId: string): Promise<Task[]> =>
     BaseApi.get<Task[]>(`api/tasks?courseId=${courseId}`),
 
