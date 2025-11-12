@@ -107,5 +107,8 @@ const Api = {
 
   createTaskResult: async(dto: CreateTaskResultDto): Promise<void> =>
     BaseApi.post<void>(`api/task-results`, dto),
+
+  getRegisterBonus: async(): Promise<number> =>
+    BaseApi.get<number>(`api/bonuses/register`),
 }
 export default Api
