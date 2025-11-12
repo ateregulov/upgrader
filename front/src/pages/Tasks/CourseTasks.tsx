@@ -4,7 +4,6 @@ import TaskCard from './TaskCard'
 import { useNavigate, useParams } from 'react-router-dom'
 import Api from '../../../api'
 import { toast } from '@/hooks/use-toast'
-import { taskCache } from './cache'
 
 const CourseTasksMock: React.FC = () => {
   const { courseId } = useParams()
@@ -21,7 +20,6 @@ const CourseTasksMock: React.FC = () => {
     try {
       const tasks = await Api.getTasks(courseId)
       setTasks(tasks)
-      tasks.forEach((task) => taskCache.set(task.id, task))
     } catch (error) {
       toast({
         title: 'Ошибка',

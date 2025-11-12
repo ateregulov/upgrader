@@ -8,6 +8,15 @@ export interface Task {
     minListItemsCount?: number;
     maxListItemsCount?: number;
     type: TaskType;
+    isCompleted: boolean;
+    results: TaskResult[] | null;
+}
+
+export interface TaskResult {
+    id: string;
+    taskId: string;
+    text: string;
+    listItems: string[];
 }
 
 export interface CreateTaskResultDto {

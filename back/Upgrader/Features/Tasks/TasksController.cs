@@ -41,6 +41,7 @@ public class TasksController : ControllerBase
                 MaxListItemsCount = x.MaxListItemsCount,
                 MinListItemsCount = x.MinListItemsCount,
                 IsUnlocked = x.Results.Where(x => x.UserId == user.Id).Any(),
+                IsCompleted = x.Results.Where(x => x.UserId == user.Id).Any(),
             })
             .ToListAsync();
 
@@ -57,13 +58,21 @@ public class TasksController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetTask(Guid id)
+    public async Task<IActionResult> GetTask(Guid id, bool includeResult)
     {
         var headersData = await this.GetHeadersData();
         if (headersData == null)
             return Unauthorized();
 
-        var task = await _dbContext.Tasks.FirstOrDefaultAsync(x => x.Id == id);
+        IQueryable<Task> taskQuery = _dbContext.Tasks;
+        if (includeResult)
+        {
+            var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.TelegramId == headersData.TelegramId);
+
+            taskQuery = taskQuery.Include(x => x.Results.Where(x => x.UserId == user.Id));
+        }
+
+        var task = await taskQuery.FirstOrDefaultAsync(x => x.Id == id);
         if (task == null)
             return NotFound("Задание не найдено");
 

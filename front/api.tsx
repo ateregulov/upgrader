@@ -102,8 +102,8 @@ const Api = {
   getTasks: async(courseId: string): Promise<Task[]> =>
     BaseApi.get<Task[]>(`api/tasks?courseId=${courseId}`),
 
-  getTask: async(taskId: string): Promise<Task> =>
-    BaseApi.get<Task>(`api/tasks/${taskId}`),
+  getTask: async(taskId: string, includeResult: boolean = false): Promise<Task> =>
+    BaseApi.get<Task>(`api/tasks/${taskId}?includeResult=${includeResult}`),
 
   createTaskResult: async(dto: CreateTaskResultDto): Promise<void> =>
     BaseApi.post<void>(`api/task-results`, dto),

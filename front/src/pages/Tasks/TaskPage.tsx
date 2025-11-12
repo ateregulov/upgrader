@@ -2,37 +2,32 @@ import { toast } from '@/hooks/use-toast'
 import Api from '../../../api'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { taskCache } from './cache'
-import { CreateTaskResultDto, TaskType } from './types'
+import { CreateTaskResultDto, Task, TaskResult, TaskType } from './types'
 
 function TaskPage() {
   const { courseId, taskId } = useParams()
   const [answer, setAnswer] = useState('')
-  const [task, setTask] = useState<{
-    id: string
-    title: string
-    text: string
-    minListItemsCount?: number
-    maxListItemsCount?: number
-    type: TaskType
-  } | null>(null)
+  const [task, setTask] = useState<Task | null>(null)
+  const [taskResult, setTaskResult] = useState<TaskResult | null>()
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!taskId) return 
-
-    const cachedTask = taskCache.get(taskId!)
-    if (cachedTask) {
-      setTask(cachedTask)
-      return
-    }
-    
     loadTask()
   }, [taskId])
 
+  useEffect(() => {
+    if (task?.results?.[0]) {
+      const result = task.results?.[0]
+      setTaskResult(result)
+      setAnswer(result?.text ?? result?.listItems?.join(', ') ?? '')
+    }
+  }, [task])
+
   const loadTask = async () => {
+    if (!taskId) return
+
     try {
-      const data = await Api.getTask(taskId!)
+      const data = await Api.getTask(taskId!, true)
       setTask(data)
     } catch {
       toast({
@@ -44,6 +39,12 @@ function TaskPage() {
   }
 
   const handleSubmit = async () => {
+    if (!task) return
+    if (taskResult) {
+      navigate(`/tasks/${courseId}`)
+      return
+    }
+
     try {
       let answerDto: CreateTaskResultDto = {
         taskId: task?.id!,
@@ -72,10 +73,10 @@ function TaskPage() {
   }
 
   const renderAnswerInput = () => {
-    console.log(task)
     if (task?.type === TaskType.Text) {
       return (
         <textarea
+          disabled={taskResult != null}
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
           className='w-full h-48 p-4 rounded-lg bg-boxdark-2 border border-gray-600 focus:border-gray-400 outline-none text-gray-100 resize-none'
@@ -86,6 +87,7 @@ function TaskPage() {
     if (task?.type === TaskType.TextList) {
       return (
         <textarea
+          disabled={taskResult != null}
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
           className='w-full h-48 p-4 rounded-lg bg-boxdark-2 border border-gray-600 focus:border-gray-400 outline-none text-gray-100 resize-none'
@@ -111,7 +113,7 @@ function TaskPage() {
           onClick={handleSubmit}
           className='mt-6 w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/80 transition'
         >
-          Отправить
+          {taskResult == null ? 'Отправить' : 'Назад к заданиям'}
         </button>
       </div>
     </div>

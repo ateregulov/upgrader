@@ -24,6 +24,9 @@ public class Task
 
     [NotMapped]
     public bool IsUnlocked { get; set; }
+
+    [NotMapped]
+    public bool IsCompleted { get; set; }
 }
 
 public enum TaskType
