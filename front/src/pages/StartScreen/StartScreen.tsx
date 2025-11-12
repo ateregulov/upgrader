@@ -5,8 +5,15 @@ import { useNavigate } from 'react-router-dom'
 const StartScreen: React.FC = () => {
   const { AppVersion } = config
   const navigate = useNavigate()
+  const alreadyHaveAccount = localStorage.getItem('isAuthenticated') != null
 
   const handleStartBtn = () => {
+    if (!alreadyHaveAccount) {
+      navigate('/welcome-bonus')
+      localStorage.setItem('isAuthenticated', 'true')
+      return
+    }
+
     navigate('/courses')
   }
 

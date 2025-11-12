@@ -13,6 +13,8 @@ import Courses from './pages/Courses/Courses'
 import TaskPage from './pages/Tasks/TaskPage'
 import CourseDetails from './pages/Courses/CourseDetails'
 import Payment from './pages/Courses/Payment'
+import WelcomeBonusScreen from './pages/Bonus/WelcomeBonusScreen'
+import RegistrationLayout from './layout/RegistrationLayout'
 
 
 function App() {
@@ -40,6 +42,15 @@ function App() {
             <StartScreenLayout>
               <PageTitle title='Start Screen' />
               <StartScreen />
+            </StartScreenLayout>
+          }
+        />
+        <Route
+          path='/welcome-bonus'
+          element={
+            <StartScreenLayout>
+              <PageTitle title='Register' />
+              <WelcomeBonusScreen />
             </StartScreenLayout>
           }
         />
