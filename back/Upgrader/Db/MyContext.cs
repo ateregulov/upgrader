@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Upgrader.Features.Courses;
+using Upgrader.Features.ReferralSystem;
 using Upgrader.Features.Tasks;
 using Upgrader.Features.Transactions;
 using Upgrader.Users;
@@ -16,6 +17,8 @@ public class MyContext : DbContext
     public DbSet<TaskResult> TaskResults { get; set; }
     public DbSet<TaskResultImage> TaskResultsImages { get; set; }
     public DbSet<CoursePurchase> CoursePurchases { get; set; }
+    public DbSet<Referral> Referrals { get; set; }
+    public DbSet<RefCode> RefCodes { get; set; }
 
     public MyContext(DbContextOptions<MyContext> options, IConfiguration configuration)
         : base(options)
