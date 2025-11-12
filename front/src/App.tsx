@@ -11,6 +11,7 @@ import { ToastContainer } from './hooks/use-toast'
 import CourseTasks from './pages/Tasks/CourseTasks'
 import Courses from './pages/Courses/Courses'
 import TaskPage from './pages/Tasks/TaskPage'
+import CourseDetails from './pages/Courses/CourseDetails'
 
 
 function App() {
@@ -47,6 +48,15 @@ function App() {
             <DefaultLayout>
               <PageTitle title='Courses' />
               <Courses />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path='/courses/:courseId'
+          element={
+            <DefaultLayout>
+              <PageTitle title='Course Details' />
+              <CourseDetails />
             </DefaultLayout>
           }
         />

@@ -27,7 +27,9 @@ function Courses() {
   }
 
   const handleCourseClick = (courseId: string) => {
-    navigate(`/tasks/${courseId}`)
+    const course = courses.find((c) => c.id === courseId)
+    if (course?.isBought) navigate(`/tasks/${courseId}`)
+    else navigate(`/courses/${courseId}`)
   }
 
   return (
