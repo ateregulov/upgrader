@@ -7,3 +7,8 @@ export interface Course {
     isBought: boolean;
     tasksCount: number;
 }
+
+export interface CoursePaymentInfo {
+    price: number;
+    balance: number;
+}

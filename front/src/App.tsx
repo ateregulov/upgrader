@@ -12,6 +12,7 @@ import CourseTasks from './pages/Tasks/CourseTasks'
 import Courses from './pages/Courses/Courses'
 import TaskPage from './pages/Tasks/TaskPage'
 import CourseDetails from './pages/Courses/CourseDetails'
+import Payment from './pages/Courses/Payment'
 
 
 function App() {
@@ -57,6 +58,15 @@ function App() {
             <DefaultLayout>
               <PageTitle title='Course Details' />
               <CourseDetails />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path='/payment/:courseId'
+          element={
+            <DefaultLayout>
+              <PageTitle title='Payment' />
+              <Payment />
             </DefaultLayout>
           }
         />
