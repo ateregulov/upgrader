@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Upgrader.Auth;
 using Upgrader.Db;
 using Upgrader.Features.Balance;
+using Upgrader.Features.Transactions;
 
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 System.Console.OutputEncoding = Encoding.UTF8;
@@ -39,6 +40,8 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<MyContext>();
 
 builder.Services.AddScoped<BalanceService>();
+
+builder.Services.AddScoped<TransactionService>();
 
 var app = builder.Build();
 
