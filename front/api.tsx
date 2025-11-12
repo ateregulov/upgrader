@@ -1,7 +1,7 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import config from './config'
 import { apiInstance } from './axiosConfig'
-import { Course } from '@/pages/Courses/types'
+import { Course, CoursePaymentInfo } from '@/pages/Courses/types'
 import { CreateTaskResultDto, Task } from '@/pages/Tasks/types'
 
 const { ApiUrl } = config
@@ -92,6 +92,9 @@ const Api = {
 
   getCourseById: async(id: string): Promise<Course> =>
     BaseApi.get<Course>(`api/courses/${id}`),
+
+  getCoursePaymentInfo: async(courseId: string): Promise<CoursePaymentInfo> =>
+    BaseApi.get<CoursePaymentInfo>(`api/course-purchases/payment-info?courseId=${courseId}`),
 
   getTasks: async(courseId: string): Promise<Task[]> =>
     BaseApi.get<Task[]>(`api/tasks?courseId=${courseId}`),
