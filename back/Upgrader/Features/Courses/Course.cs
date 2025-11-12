@@ -23,5 +23,8 @@ public class Course
 
     [NotMapped]
     public int TasksCount { get; set; }
+
+    [NotMapped]
+    public int FinishedTasksCount { get; set; }
     public List<CoursePurchase> Purchases { get; set; } = [];
 }

@@ -17,6 +17,9 @@ function CourseCard({ course, onClick }: CourseCardProps) {
 
       <h2 className='text-white text-xl font-semibold mb-2'>{course.title}</h2>
       <p className='text-gray-300 mb-2'>{course.shortDescription}</p>
+      {course.isBought && (
+        <p className='text-gray-300 mb-2'>{`${course.finishedTasksCount}/${course.tasksCount} заданий завершено`}</p>
+      )}
       <p className='text-gray-400 text-sm'>{course.isBought ? 'Уже в вашей библиотеке' : `Цена: ${course.price}₽`}</p>
     </div>
   )

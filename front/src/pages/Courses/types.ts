@@ -6,6 +6,7 @@ export interface Course {
     price: number;
     isBought: boolean;
     tasksCount: number;
+    finishedTasksCount: number
 }
 
 export interface CoursePaymentInfo {

@@ -34,6 +34,7 @@ public class CoursesController : ControllerBase
                 Price = x.Price,
                 IsBought = x.Purchases.Any(x => x.UserId == user.Id),
                 TasksCount = x.Tasks.Count,
+                FinishedTasksCount = x.Tasks.Count(x => x.Results.Any(x => x.UserId == user.Id)),
             })
             .OrderByDescending(x => x.IsBought)
             .ToListAsync();
@@ -60,6 +61,7 @@ public class CoursesController : ControllerBase
                 Price = x.Price,
                 IsBought = x.Purchases.Any(x => x.UserId == user.Id),
                 TasksCount = x.Tasks.Count,
+                FinishedTasksCount = x.Tasks.Count(x => x.Results.Any(x => x.UserId == user.Id))
             })
             .FirstOrDefaultAsync(x => x.Id == id);
 
