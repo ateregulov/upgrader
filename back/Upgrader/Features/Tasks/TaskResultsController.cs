@@ -37,8 +37,17 @@ public class TaskResultsController : ControllerBase
         if (task.Course.Purchases.Count == 0)
             return BadRequest("Нельзя отвечать на задания курса, который вы не купили");
 
-        if (task.Type == TaskType.TextList && dto.ListItems.Count == 0)
-            return BadRequest("Нельзя не вводить список элементов для задания такого типа");
+        if (task.Type == TaskType.TextList)
+        {
+            if (dto.ListItems.Count == 0)
+                return BadRequest("Нельзя не вводить список элементов для задания такого типа");
+
+            dto.ListItems = dto.ListItems.Where(x => !string.IsNullOrEmpty(x)).ToList();
+            if (task.MinListItemsCount.HasValue && dto.ListItems.Count < task.MinListItemsCount)
+                return BadRequest($"Нельзя вводить меньше {task.MinListItemsCount} элементов для задания такого типа");
+            if (task.MaxListItemsCount.HasValue && dto.ListItems.Count > task.MaxListItemsCount)
+                return BadRequest($"Нельзя вводить больше {task.MaxListItemsCount} элементов для задания такого типа");
+        }
 
         if (task.Type == TaskType.Text && string.IsNullOrEmpty(dto.Text))
             return BadRequest("Нельзя не вводить текст для задания такого типа");
