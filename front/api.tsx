@@ -96,6 +96,9 @@ const Api = {
   getCoursePaymentInfo: async(courseId: string): Promise<CoursePaymentInfo> =>
     BaseApi.get<CoursePaymentInfo>(`api/course-purchases/payment-info?courseId=${courseId}`),
 
+  buyCourse: async(courseId: string): Promise<void> =>
+    BaseApi.post<void>(`api/course-purchases`, { courseId }),
+
   getTasks: async(courseId: string): Promise<Task[]> =>
     BaseApi.get<Task[]>(`api/tasks?courseId=${courseId}`),
 
