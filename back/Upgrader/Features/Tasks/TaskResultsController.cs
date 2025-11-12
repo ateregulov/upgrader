@@ -25,9 +25,17 @@ public class TaskResultsController : ControllerBase
         if (!string.IsNullOrEmpty(dto.Text) && dto.ListItems.Count != 0)
             return BadRequest("Нельзя мешать ответы для конкретного типа задания");
 
-        var task = await _dbContext.Tasks.FirstOrDefaultAsync(x => x.Id == dto.TaskId);
+        var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.TelegramId == headersData.TelegramId);
+
+        var task = await _dbContext
+            .Tasks.Include(x => x.Course)
+            .ThenInclude(x => x.Purchases.Where(x => x.UserId == user.Id))
+            .FirstOrDefaultAsync(x => x.Id == dto.TaskId);
+
         if (task == null)
             return NotFound("Задание не найдено");
+        if (task.Course.Purchases.Count == 0)
+            return BadRequest("Нельзя отвечать на задания курса, который вы не купили");
 
         if (task.Type == TaskType.TextList && dto.ListItems.Count == 0)
             return BadRequest("Нельзя не вводить список элементов для задания такого типа");
@@ -35,7 +43,6 @@ public class TaskResultsController : ControllerBase
         if (task.Type == TaskType.Text && string.IsNullOrEmpty(dto.Text))
             return BadRequest("Нельзя не вводить текст для задания такого типа");
 
-        var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.TelegramId == headersData.TelegramId);
 
         var taskResult = new TaskResult
         {
