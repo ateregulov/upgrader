@@ -5,4 +5,5 @@ export interface Course {
     longDescription: string;
     price: number;
     isBought: boolean;
+    tasksCount: number;
 }

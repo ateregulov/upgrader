@@ -33,6 +33,7 @@ public class CoursesController : ControllerBase
                 LongDescription = x.LongDescription,
                 Price = x.Price,
                 IsBought = x.Purchases.Any(x => x.UserId == user.Id),
+                TasksCount = x.Tasks.Count,
             })
             .OrderByDescending(x => x.IsBought)
             .ToListAsync();
@@ -58,6 +59,7 @@ public class CoursesController : ControllerBase
                 LongDescription = x.LongDescription,
                 Price = x.Price,
                 IsBought = x.Purchases.Any(x => x.UserId == user.Id),
+                TasksCount = x.Tasks.Count,
             })
             .FirstOrDefaultAsync(x => x.Id == id);
 

@@ -20,5 +20,8 @@ public class Course
 
     [NotMapped]
     public bool IsBought { get; set; }
+
+    [NotMapped]
+    public int TasksCount { get; set; }
     public List<CoursePurchase> Purchases { get; set; } = [];
 }
