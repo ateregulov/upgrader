@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using OrisAppBack.Other.Settings;
 using Upgrader.Auth;
 using Upgrader.Db;
 using Upgrader.Features.Balance;
@@ -34,6 +35,8 @@ builder.Services.AddCors(options =>
         }
     );
 });
+
+builder.Services.Configure<AppSettings>(builder.Configuration);
 
 builder.Services.AddControllers();
 
