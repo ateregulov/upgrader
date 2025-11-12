@@ -3,6 +3,7 @@ import Api from '../../../api'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { CreateTaskResultDto, Task, TaskResult, TaskType } from './types'
+import { Button } from '@mui/material'
 
 function TaskPage() {
   const { courseId, taskId } = useParams()
@@ -72,13 +73,36 @@ function TaskPage() {
     return answerDto
   }
 
+  const isValidInput = (): boolean => {
+    if (task?.type === TaskType.Text) {
+      return answer.trim() !== ''
+    }
+    if (task?.type === TaskType.TextList) {
+      const minListItemsCount = task?.minListItemsCount ?? 0
+      const answerItems = answer
+        .split(',')
+        .map((item) => item.trim())
+        .filter((item) => item !== '')
+      return (
+        answerItems.length >= minListItemsCount && answerItems.length <= (task?.maxListItemsCount ?? Number.MAX_VALUE)
+      )
+    }
+
+    return false
+  }
+
+  const handleInput = (answer: string) => {
+    answer = answer.replace(/^\s*,/, '').replace(/,\s*,/g, ',')
+    setAnswer(answer)
+  }
+
   const renderAnswerInput = () => {
     if (task?.type === TaskType.Text) {
       return (
         <textarea
           disabled={taskResult != null}
           value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
+          onChange={(e) => handleInput(e.target.value)}
           className='w-full h-48 p-4 rounded-lg bg-boxdark-2 border border-gray-600 focus:border-gray-400 outline-none text-gray-100 resize-none'
           placeholder='Введите ваш ответ...'
         />
@@ -89,7 +113,7 @@ function TaskPage() {
         <textarea
           disabled={taskResult != null}
           value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
+          onChange={(e) => handleInput(e.target.value)}
           className='w-full h-48 p-4 rounded-lg bg-boxdark-2 border border-gray-600 focus:border-gray-400 outline-none text-gray-100 resize-none'
           placeholder='Введите ваш ответ, разделяйте запятой...'
         />
@@ -109,12 +133,25 @@ function TaskPage() {
 
         {renderAnswerInput()}
 
-        <button
+        <Button
+          fullWidth
+          variant='contained'
+          disabled={!isValidInput()}
           onClick={handleSubmit}
-          className='mt-6 w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/80 transition'
+          sx={{
+            backgroundColor: '#2563eb',
+            '&:hover': { backgroundColor: '#1d4ed8' },
+            '&.Mui-disabled': {
+              backgroundColor: '#4b5563',
+              color: '#9ca3af',
+            },
+            mt: '10px',
+            borderRadius: '8px',
+            padding: '8px 16px',
+          }}
         >
           {taskResult == null ? 'Отправить' : 'Назад к заданиям'}
-        </button>
+        </Button>
       </div>
     </div>
   )
