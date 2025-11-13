@@ -85,7 +85,7 @@ public class BotBackgroundService : BackgroundService
                 var refCode = parts[1];
 
                 var dbRefCodeWithReferral = await dbContext
-                    .RefCodes.Include(x => x.User)
+                    .RefCodes.Where(x => x.IsActive).Include(x => x.User)
                     .Where(x => x.Code == refCode)
                     .Select(x => new
                     {

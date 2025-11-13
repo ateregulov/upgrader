@@ -30,7 +30,7 @@ public class ReferralsController : ControllerBase
         var user = await _dbContext.Users
             .FirstOrDefaultAsync(u => u.TelegramId == headersData.TelegramId);
 
-        var refCode = await _dbContext.RefCodes.FirstOrDefaultAsync(x => x.UserId == user.Id);
+        var refCode = await _dbContext.RefCodes.Where(x => x.IsActive).FirstOrDefaultAsync(x => x.UserId == user.Id);
 
         var startOfLink = $"https://t.me/{_appSettings.TelegramBotName}?start=";
 
