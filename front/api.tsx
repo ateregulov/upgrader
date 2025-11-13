@@ -114,5 +114,8 @@ const Api = {
 
   getReferralInfo: async(): Promise<RefInfo> =>
     BaseApi.post<RefInfo>(`api/referrals/info`, {}),
+
+  getBalance: async(): Promise<number> =>
+    BaseApi.get<number>(`api/balances/me`),
 }
 export default Api
