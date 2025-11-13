@@ -3,35 +3,44 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { toast } from '@/hooks/use-toast'
 import Api from '../../../api'
 import { Button } from '@mui/material'
-import { CoursePaymentInfo } from './types'
 import { useBalance } from '@/Contexts/BalanceContext'
+import { coursesCache } from './cache'
 
 function Payment() {
   const { courseId } = useParams<{ courseId: string }>()
-  const [paymentInfo, setPaymentInfo] = useState<CoursePaymentInfo>()
-  const { setBalance } = useBalance();
+  const { setBalance, balance } = useBalance();
+  const [coursePrice, setCoursePrice] = useState<number>();
   const navigate = useNavigate()
 
   useEffect(() => {
-    getPaymentInfo()
+    getCoursePrice()
   }, [courseId])
 
-  const getPaymentInfo = async () => {
-    if (!courseId) return
+  const getCoursePrice = async () => {
+    if(!courseId) return;
+
+    let course = coursesCache.get(courseId)
+    if (course){
+      setCoursePrice(course.price)
+      return;
+    }
 
     try {
-      const paymentInfo = await Api.getCoursePaymentInfo(courseId!)
-      setPaymentInfo(paymentInfo)
+      const course = await Api.getCourseById(courseId)
+      coursesCache.set(courseId, course)
+      setCoursePrice(course.price)
     } catch (error) {
       toast({
         title: 'Ошибка',
+        description: 'Пожалуйста попробуйте позже',
         variant: 'error',
       })
     }
   }
 
   const handlePay = async () => {
-    if (!paymentInfo) return
+    if (!coursePrice) return
+    if (balance < coursePrice) return
 
     try {
       await Api.buyCourse(courseId!)
@@ -51,11 +60,11 @@ function Payment() {
   return (
     <div className='max-w-md mx-auto p-6 bg-gray-800 rounded-lg text-white'>
       <h2 className='text-2xl font-semibold mb-4'>Оплата курса</h2>
-      <p className='mb-2'>Баланс: {paymentInfo?.balance}₽</p>
-      <p className='mb-4'>Стоимость курса: {paymentInfo?.price}₽</p>
+      <p className='mb-2'>Баланс: {balance}₽</p>
+      <p className='mb-4'>Стоимость курса: {coursePrice}₽</p>
 
       <Button
-        disabled={!paymentInfo || paymentInfo.balance < paymentInfo.price}
+        disabled={!coursePrice || balance < coursePrice}
         sx={{
           backgroundColor: '#2563eb',
           '&:hover': { backgroundColor: '#1d4ed8' },

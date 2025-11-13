@@ -1,7 +1,7 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import config from './config'
 import { apiInstance } from './axiosConfig'
-import { Course, CoursePaymentInfo } from '@/pages/Courses/types'
+import { Course } from '@/pages/Courses/types'
 import { CreateTaskResultDto, Task } from '@/pages/Tasks/types'
 import { RefInfo } from '@/pages/ReferralScreen/types'
 
@@ -93,9 +93,6 @@ const Api = {
 
   getCourseById: async(id: string): Promise<Course> =>
     BaseApi.get<Course>(`api/courses/${id}`),
-
-  getCoursePaymentInfo: async(courseId: string): Promise<CoursePaymentInfo> =>
-    BaseApi.get<CoursePaymentInfo>(`api/course-purchases/payment-info?courseId=${courseId}`),
 
   buyCourse: async(courseId: string): Promise<void> =>
     BaseApi.post<void>(`api/course-purchases`, { courseId }),

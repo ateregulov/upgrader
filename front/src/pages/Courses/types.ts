@@ -8,8 +8,3 @@ export interface Course {
     tasksCount: number;
     finishedTasksCount: number
 }
-
-export interface CoursePaymentInfo {
-    price: number;
-    balance: number;
-}

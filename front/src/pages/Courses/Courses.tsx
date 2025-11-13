@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CourseCard from '../StartScreen/CourseCard'
 import { Course } from './types'
+import { coursesCache } from './cache'
 
 function Courses() {
   const [courses, setCourses] = useState<Course[]>([])
@@ -17,6 +18,7 @@ function Courses() {
     try {
       const courses = await Api.getCourses()
       setCourses(courses)
+      courses.forEach((course) => coursesCache.set(course.id, course))
     } catch (error) {
       toast({
         title: 'Ошибка',

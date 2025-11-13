@@ -25,27 +25,6 @@ public class CoursePurchasesController : ControllerBase
         _transactionService = transactionService;
     }
 
-    [HttpGet("payment-info")]
-    public async Task<IActionResult> GetCoursePaymentInfo(Guid courseId)
-    {
-        var headersData = await this.GetHeadersData();
-        if (headersData == null)
-            return Unauthorized();
-
-        var user = await _dbContext.Users.SingleOrDefaultAsync(x =>
-            x.TelegramId == headersData.TelegramId
-        );
-
-        var price = await _dbContext
-            .Courses.Where(x => x.Id == courseId)
-            .Select(x => x.Price)
-            .FirstOrDefaultAsync();
-
-        var balance = await _balanceService.GetBalanceAsync(user.Id);
-
-        return Ok(new CoursePaymentInfo { Price = price, Balance = balance });
-    }
-
     [HttpPost]
     public async Task<IActionResult> PurchaseCourse(PurchaseCourseDto dto)
     {
@@ -97,11 +76,5 @@ public class CoursePurchasesController : ControllerBase
     public class PurchaseCourseDto
     {
         public Guid CourseId { get; set; }
-    }
-
-    public class CoursePaymentInfo
-    {
-        public decimal Price { get; set; }
-        public decimal Balance { get; set; }
     }
 }
