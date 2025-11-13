@@ -3,6 +3,7 @@ import config from './config'
 import { apiInstance } from './axiosConfig'
 import { Course, CoursePaymentInfo } from '@/pages/Courses/types'
 import { CreateTaskResultDto, Task } from '@/pages/Tasks/types'
+import { RefInfo } from '@/pages/ReferralScreen/types'
 
 const { ApiUrl } = config
 
@@ -110,5 +111,8 @@ const Api = {
 
   getRegisterBonus: async(): Promise<number> =>
     BaseApi.get<number>(`api/bonuses/register`),
+
+  getReferralInfo: async(): Promise<RefInfo> =>
+    BaseApi.post<RefInfo>(`api/referrals/info`, {}),
 }
 export default Api
