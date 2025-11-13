@@ -37,8 +37,8 @@ namespace Upgrader.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ParentId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ParentTelegramId = table.Column<long>(type: "bigint", nullable: false),
+                    UserTelegramId = table.Column<long>(type: "bigint", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -52,9 +52,9 @@ namespace Upgrader.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Referrals_ParentId_UserId",
+                name: "IX_Referrals_UserTelegramId",
                 table: "Referrals",
-                columns: new[] { "ParentId", "UserId" },
+                column: "UserTelegramId",
                 unique: true);
         }
 

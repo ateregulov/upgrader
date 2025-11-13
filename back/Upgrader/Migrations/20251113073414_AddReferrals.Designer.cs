@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Upgrader.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20251112135811_AddReferrals")]
+    [Migration("20251113073414_AddReferrals")]
     partial class AddReferrals
     {
         /// <inheritdoc />
@@ -112,15 +112,15 @@ namespace Upgrader.Migrations
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("ParentId")
-                        .HasColumnType("uuid");
+                    b.Property<long>("ParentTelegramId")
+                        .HasColumnType("bigint");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                    b.Property<long>("UserTelegramId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParentId", "UserId")
+                    b.HasIndex("UserTelegramId")
                         .IsUnique();
 
                     b.ToTable("Referrals");

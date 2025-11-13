@@ -109,15 +109,15 @@ namespace Upgrader.Migrations
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("ParentId")
-                        .HasColumnType("uuid");
+                    b.Property<long>("ParentTelegramId")
+                        .HasColumnType("bigint");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                    b.Property<long>("UserTelegramId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParentId", "UserId")
+                    b.HasIndex("UserTelegramId")
                         .IsUnique();
 
                     b.ToTable("Referrals");
