@@ -48,6 +48,7 @@ public class ReferralsController : ControllerBase
             var info = new RefInfo
             {
                 Link = $"{startOfLink}{refCode.Code}",
+                RefBonusAmount = _appSettings.BonusSettings.ReferrerBonus,
             };
 
             return Ok(info);
