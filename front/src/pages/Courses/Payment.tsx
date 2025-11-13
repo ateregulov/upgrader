@@ -4,10 +4,12 @@ import { toast } from '@/hooks/use-toast'
 import Api from '../../../api'
 import { Button } from '@mui/material'
 import { CoursePaymentInfo } from './types'
+import { useBalance } from '@/Contexts/BalanceContext'
 
 function Payment() {
   const { courseId } = useParams<{ courseId: string }>()
   const [paymentInfo, setPaymentInfo] = useState<CoursePaymentInfo>()
+  const { setBalance } = useBalance();
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -34,6 +36,8 @@ function Payment() {
     try {
       await Api.buyCourse(courseId!)
       toast({ title: 'Успешно', description: 'Курс куплен!', variant: 'success' })
+      const newBalance = await Api.getBalance()
+      setBalance(newBalance)
       navigate(`/tasks/${courseId}`)
     } catch {
       toast({
