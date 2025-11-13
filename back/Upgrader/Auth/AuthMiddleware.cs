@@ -132,8 +132,29 @@ public class AuthMiddleware
                         settings.BonusSettings.RegisterBonus,
                         TransactionType.RegisterBonus,
                         receiverId: user.Id,
-                        uniqueKey: $"registerBonus-{user}"
+                        uniqueKey: $"registerBonus-{user.Id}"
                     );
+
+                    var refData = await _dbContext
+                        .Referrals.Where(r => r.UserTelegramId == telegramId)
+                        .Select(r => new
+                        {
+                            ReferrerUserId = _dbContext
+                                .Users.Where(u => u.TelegramId == r.ParentTelegramId)
+                                .Select(u => u.Id)
+                                .FirstOrDefault(),
+                        })
+                        .FirstOrDefaultAsync();
+
+                    if (refData?.ReferrerUserId != null)
+                    {
+                        await transactionService.CreateTransactionAsync(
+                            settings.BonusSettings.ReferrerBonus,
+                            TransactionType.ReferrerBonus,
+                            receiverId: refData.ReferrerUserId,
+                            uniqueKey: $"referrerBonus-from-{user.Id}"
+                        );
+                    }
                 }
 
                 headersData.UserId = user.Id;
