@@ -15,6 +15,7 @@ import CourseDetails from './pages/Courses/CourseDetails'
 import Payment from './pages/Courses/Payment'
 import WelcomeBonusScreen from './pages/Bonus/WelcomeBonusScreen'
 import RegistrationLayout from './layout/RegistrationLayout'
+import ReferralScreen from './pages/ReferralScreen/ReferralScreen'
 
 
 function App() {
@@ -52,6 +53,15 @@ function App() {
               <PageTitle title='Register' />
               <WelcomeBonusScreen />
             </StartScreenLayout>
+          }
+        />
+        <Route
+          path='/referral'
+          element={
+            <DefaultLayout>
+              <PageTitle title='Register' />
+              <ReferralScreen />
+            </DefaultLayout>
           }
         />
         <Route
