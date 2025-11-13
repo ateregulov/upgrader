@@ -35,8 +35,7 @@ const ReferralScreen: React.FC = () => {
         <p className='text-gray-300 mb-4'>За каждого друга, который зарегистрируется используя вашу ссылку</p>
         <ul className='text-gray-300 space-y-1 mb-4'>
           <li>
-            • Вы получаете <span className='font-semibold text-green-400'>+{refInfo?.refBonusAmount || 0}₽</span> за
-            каждого друга
+            • Вы получаете <span className='font-semibold text-green-400'>+{refInfo?.refBonusAmount || 0}₽</span>
           </li>
         </ul>
       </div>
@@ -46,6 +45,7 @@ const ReferralScreen: React.FC = () => {
         <div className='flex flex-col sm:flex-row gap-4 items-start sm:items-end'>
           <div className='flex'>
             <TextField
+              disabled
               value={refInfo?.link || ''}
               variant='outlined'
               size='small'
@@ -53,7 +53,6 @@ const ReferralScreen: React.FC = () => {
                 width: { xs: '70%', sm: '475px' },
                 '& .MuiOutlinedInput-root': {
                   backgroundColor: 'rgba(30, 30, 30, 0.8)',
-                  color: 'white',
                   borderRadius: '12px',
                   '& fieldset': {
                     borderColor: 'rgba(255, 255, 255, 0.15)',
@@ -64,6 +63,14 @@ const ReferralScreen: React.FC = () => {
                   '&.Mui-focused fieldset': {
                     borderColor: 'rgba(255, 255, 255, 0.5)',
                   },
+                },
+                '& .MuiInputBase-input': {
+                  color: 'white',
+                },
+                '& .MuiInputBase-input.Mui-disabled': {
+                  WebkitTextFillColor: 'white',
+                  color: 'white',
+                  opacity: 1,
                 },
               }}
               InputProps={{
