@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { toast } from '@/hooks/use-toast'
 import { RefInfo } from './types'
 import Api from '../../../api'
+import CopyButton from '@/components/Buttons/CopyButton'
 
 const ReferralScreen: React.FC = () => {
   const [refInfo, setRefInfo] = useState<RefInfo>()
@@ -34,7 +35,8 @@ const ReferralScreen: React.FC = () => {
         <p className='text-gray-300 mb-4'>За каждого друга, который зарегистрируется используя вашу ссылку</p>
         <ul className='text-gray-300 space-y-1 mb-4'>
           <li>
-            • Вы получаете <span className='font-semibold text-green-400'>+{refInfo?.refBonusAmount || 0}₽</span> за каждого друга
+            • Вы получаете <span className='font-semibold text-green-400'>+{refInfo?.refBonusAmount || 0}₽</span> за
+            каждого друга
           </li>
         </ul>
       </div>
@@ -42,24 +44,34 @@ const ReferralScreen: React.FC = () => {
       <div className='bg-gray-800 rounded-xl p-6 mb-8'>
         <h2 className='text-xl font-semibold text-white mb-4'>Ваша реферальная ссылка</h2>
         <div className='flex flex-col sm:flex-row gap-4 items-start sm:items-end'>
-          <TextField
-            value={refInfo?.link || ''}
-            variant='outlined'
-            size='small'
-            InputProps={{
-              readOnly: true,
-              sx: {
-                minWidth: '300px',
-                backgroundColor: 'rgba(30, 30, 30, 0.8)',
-                color: 'white',
-                borderRadius: '12px',
-                width: '200px',
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgba(255, 255, 255, 0.15)',
+          <div className='flex'>
+            <TextField
+              value={refInfo?.link || ''}
+              variant='outlined'
+              size='small'
+              sx={{
+                width: { xs: '70%', sm: '475px' },
+                '& .MuiOutlinedInput-root': {
+                  backgroundColor: 'rgba(30, 30, 30, 0.8)',
+                  color: 'white',
+                  borderRadius: '12px',
+                  '& fieldset': {
+                    borderColor: 'rgba(255, 255, 255, 0.15)',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'rgba(255, 255, 255, 0.5)',
+                  },
                 },
-              },
-            }}
-          />
+              }}
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+            <CopyButton valueForCopy={refInfo?.link || ''} />
+          </div>
         </div>
         <p className='text-gray-400 text-sm mt-3'>Отправьте эту ссылку другу.</p>
       </div>
