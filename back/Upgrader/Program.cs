@@ -6,6 +6,7 @@ using Upgrader.Auth;
 using Upgrader.Bot;
 using Upgrader.Db;
 using Upgrader.Features.Balance;
+using Upgrader.Features.ReferralSystem;
 using Upgrader.Features.Transactions;
 
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -50,6 +51,8 @@ builder.Services.AddScoped<TransactionService>();
 
 builder.Services.AddSingleton<AppBot>();
 builder.Services.AddHostedService<BotBackgroundService>();
+
+builder.Services.AddSingleton<RefCodeConverter>();
 
 var app = builder.Build();
 
