@@ -1,6 +1,9 @@
+using Microsoft.EntityFrameworkCore;
 using OrisAppBack.Features.Bot;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+using Upgrader.Features.ReferralSystem;
 
 namespace Upgrader.Bot;
 
@@ -71,7 +74,43 @@ public class BotBackgroundService : BackgroundService
         CancellationToken cancellationToken
     )
     {
+        if (update.Type == UpdateType.Message && update.Message.Text.StartsWith("/start"))
+        {
+            var parts = update.Message.Text.Split(' ');
+            if (parts.Length > 1)
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<MyContext>();
 
+                var refCode = parts[1];
+
+                var dbRefCodeWithReferral = await dbContext
+                    .RefCodes.Include(x => x.User)
+                    .Where(x => x.Code == refCode)
+                    .Select(x => new
+                    {
+                        RefUser = x.User,
+                        ReferralExists = x.User.TelegramId == update.Message.Chat.Id
+                            || dbContext.Referrals.Any(r =>
+                                r.UserTelegramId == update.Message.Chat.Id
+                                && r.ParentTelegramId == x.User.TelegramId
+                            ),
+                    })
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (dbRefCodeWithReferral == null || dbRefCodeWithReferral.ReferralExists)
+                    return;
+
+                var referral = new Referral
+                {
+                    UserTelegramId = update.Message.Chat.Id,
+                    ParentTelegramId = dbRefCodeWithReferral.RefUser.TelegramId.Value,
+                };
+
+                await dbContext.Referrals.AddAsync(referral, cancellationToken);
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
+        }
     }
 
     private async Task PollingErrorHandler(
