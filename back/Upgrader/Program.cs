@@ -1,7 +1,13 @@
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using OrisAppBack.Features.Bot;
+using OrisAppBack.Other.Settings;
 using Upgrader.Auth;
+using Upgrader.Bot;
 using Upgrader.Db;
+using Upgrader.Features.Balance;
+using Upgrader.Features.ReferralSystem;
+using Upgrader.Features.Transactions;
 
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 System.Console.OutputEncoding = Encoding.UTF8;
@@ -33,9 +39,20 @@ builder.Services.AddCors(options =>
     );
 });
 
+builder.Services.Configure<AppSettings>(builder.Configuration);
+
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<MyContext>();
+
+builder.Services.AddScoped<BalanceService>();
+
+builder.Services.AddScoped<TransactionService>();
+
+builder.Services.AddSingleton<AppBot>();
+builder.Services.AddHostedService<BotBackgroundService>();
+
+builder.Services.AddSingleton<RefCodeConverter>();
 
 var app = builder.Build();
 

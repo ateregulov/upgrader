@@ -4,10 +4,18 @@ import Loader from '@/common/Loader'
 import PageTitle from '@/components/PageTitle'
 import DefaultLayout from './layout/DefaultLayout'
 import StartScreenLayout from './layout/StartScreenLayout'
-import StartScreen from './pages/StartScreen'
+import StartScreen from './pages/StartScreen/StartScreen'
 
 import { ToastProvider, ToastViewport } from './components/toast'
 import { ToastContainer } from './hooks/use-toast'
+import CourseTasks from './pages/Tasks/CourseTasks'
+import Courses from './pages/Courses/Courses'
+import TaskPage from './pages/Tasks/TaskPage'
+import CourseDetails from './pages/Courses/CourseDetails'
+import Payment from './pages/Courses/Payment'
+import WelcomeBonusScreen from './pages/Bonus/WelcomeBonusScreen'
+import RegistrationLayout from './layout/RegistrationLayout'
+import ReferralScreen from './pages/ReferralScreen/ReferralScreen'
 
 
 function App() {
@@ -30,12 +38,75 @@ function App() {
       <ToastContainer />
       <Routes>
         <Route
-          path="/"
+          path='/'
           element={
             <StartScreenLayout>
-              <PageTitle title="Start Screen" />
+              <PageTitle title='Start Screen' />
               <StartScreen />
             </StartScreenLayout>
+          }
+        />
+        <Route
+          path='/welcome-bonus'
+          element={
+            <StartScreenLayout>
+              <PageTitle title='Register' />
+              <WelcomeBonusScreen />
+            </StartScreenLayout>
+          }
+        />
+        <Route
+          path='/referral'
+          element={
+            <DefaultLayout>
+              <PageTitle title='Register' />
+              <ReferralScreen />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path='/courses'
+          element={
+            <DefaultLayout>
+              <PageTitle title='Courses' />
+              <Courses />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path='/courses/:courseId'
+          element={
+            <DefaultLayout>
+              <PageTitle title='Course Details' />
+              <CourseDetails />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path='/payment/:courseId'
+          element={
+            <DefaultLayout>
+              <PageTitle title='Payment' />
+              <Payment />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path='/tasks/:courseId'
+          element={
+            <DefaultLayout>
+              <PageTitle title='Course Tasks' />
+              <CourseTasks />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path='/tasks/:courseId/:taskId'
+          element={
+            <DefaultLayout>
+              <PageTitle title='Task' />
+              <TaskPage />
+            </DefaultLayout>
           }
         />
       </Routes>

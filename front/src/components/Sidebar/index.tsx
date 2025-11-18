@@ -89,33 +89,26 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             <h3 className='mb-4 ml-4 text-sm font-semibold text-bodydark2'>Меню</h3>
 
             <ul className='mb-6 flex flex-col gap-1.5'>
-              {/* <!-- Статистика --> */}
               <li>
                 <NavLink
-                  to='/statistics'
+                  to='/courses'
                   onClick={() => setSidebarOpen(false)}
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes('statistics') && 'bg-graydark dark:bg-meta-4'
                   }`}
                 >
-                  <svg
-                    className='fill-current'
-                    width='18'
-                    height='18'
-                    viewBox='0 0 18 18'
-                    fill='none'
-                    xmlns='http://www.w3.org/2000/svg'
-                  >
-                    <path d='M16.5 2.25H1.5C0.675 2.25 0 2.925 0 3.75V14.25C0 15.075 0.675 15.75 1.5 15.75H16.5C17.325 15.75 18 15.075 18 14.25V3.75C18 2.925 17.325 2.25 16.5 2.25ZM16.5 14.25H1.5V3.75H16.5V14.25Z' fill=''/>
-                    <path d='M3 11.25H6V6.75H3V11.25Z' fill=''/>
-                    <path d='M7.5 11.25H10.5V8.25H7.5V11.25Z' fill=''/>
-                    <path d='M12 11.25H15V5.25H12V11.25Z' fill=''/>
-                  </svg>
-                  Статистика
+                  Курсы
+                </NavLink>
+                <NavLink
+                  to='/referral'
+                  onClick={() => setSidebarOpen(false)}
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('statistics') && 'bg-graydark dark:bg-meta-4'
+                  }`}
+                >
+                  Реферальная программа
                 </NavLink>
               </li>
-            
-              
             </ul>
           </div>
         </nav>

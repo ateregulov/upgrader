@@ -1,10 +1,11 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import config from './config'
 import { apiInstance } from './axiosConfig'
+import { Course } from '@/pages/Courses/types'
+import { CreateTaskResultDto, Task } from '@/pages/Tasks/types'
+import { RefInfo } from '@/pages/ReferralScreen/types'
 
 const { ApiUrl } = config
-
-import { FrontendLog } from '@/services/errorService'
 
 const convertDateToServer = (date: Date): string => date.toISOString()
 
@@ -86,44 +87,32 @@ interface NodeUrl {
 const Api = {
   ApiUrl,
   errorHandler,
-    
-  createFrontendLog: async(error: FrontendLog): Promise<void> =>
-    BaseApi.post<void>('api/frontendLog', error),
 
-  ping: async(): Promise<void> =>
-    BaseApi.get<void>('api/health/ping'),
+  getCourses: async(): Promise<Course[]> =>
+    BaseApi.get<Course[]>('api/courses'),
 
-  // Профиль слушателя
-  getHearerProfile: async(): Promise<any> =>
-    BaseApi.get<any>('api/hearer/profile'),
+  getCourseById: async(id: string): Promise<Course> =>
+    BaseApi.get<Course>(`api/courses/${id}`),
 
-  createHearerProfile: async(profile: any): Promise<void> =>
-    BaseApi.post<void>('api/hearer/profile', profile),
+  buyCourse: async(courseId: string): Promise<void> =>
+    BaseApi.post<void>(`api/course-purchases`, { courseId }),
 
-  updateHearerProfile: async(profile: any): Promise<void> =>
-    BaseApi.put<void>('api/hearer/profile', profile),
+  getTasks: async(courseId: string): Promise<Task[]> =>
+    BaseApi.get<Task[]>(`api/tasks?courseId=${courseId}`),
 
-  getProfileProgress: async(): Promise<any> =>
-    BaseApi.get<any>('api/hearer/profile/progress'),
+  getTask: async(taskId: string, includeResult: boolean = false): Promise<Task> =>
+    BaseApi.get<Task>(`api/tasks/${taskId}?includeResult=${includeResult}`),
 
-  uploadMyPhoto: async(file: File): Promise<void> => {
-    const formData = new FormData();
-    formData.append('file', file);
-    return BaseApi.post<void>('api/hearer/photo/my', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-  },
+  createTaskResult: async(dto: CreateTaskResultDto): Promise<void> =>
+    BaseApi.post<void>(`api/task-results`, dto),
 
-  getMyPhoto: async(): Promise<string> => {
-    const response = await apiInstance.get(getUrl('api/hearer/photo/my'), {
-      responseType: 'blob',
-    });
-    return URL.createObjectURL(response.data);
-  },
+  getRegisterBonus: async(): Promise<number> =>
+    BaseApi.get<number>(`api/bonuses/register`),
 
-  deleteMyPhoto: async(): Promise<void> =>
-    BaseApi.delete('api/hearer/photo/my'),
+  getReferralInfo: async(): Promise<RefInfo> =>
+    BaseApi.post<RefInfo>(`api/referrals/info`, {}),
+
+  getBalance: async(): Promise<number> =>
+    BaseApi.get<number>(`api/balances/me`),
 }
 export default Api

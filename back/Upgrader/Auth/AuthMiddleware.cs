@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrisAppBack.Other.Settings;
 using Upgrader.Db;
+using Upgrader.Features.Transactions;
 using Upgrader.Users;
 
 namespace Upgrader.Auth;
@@ -105,6 +106,8 @@ public class AuthMiddleware
 
                 if (user == null)
                 {
+                    var transactionService = context.RequestServices.GetService<TransactionService>();
+
                     user = new User
                     {
                         Id = Guid.NewGuid(),
@@ -125,6 +128,33 @@ public class AuthMiddleware
                     _dbContext.Users.Add(user);
                     _dbContext.TgProfiles.Add(tgProfile);
                     await _dbContext.SaveChangesAsync();
+                    await transactionService.CreateTransactionAsync(
+                        settings.BonusSettings.RegisterBonus,
+                        TransactionType.RegisterBonus,
+                        receiverId: user.Id,
+                        uniqueKey: $"registerBonus-{user.Id}"
+                    );
+
+                    var refData = await _dbContext
+                        .Referrals.Where(r => r.UserTelegramId == telegramId)
+                        .Select(r => new
+                        {
+                            ReferrerUserId = _dbContext
+                                .Users.Where(u => u.TelegramId == r.ParentTelegramId)
+                                .Select(u => u.Id)
+                                .FirstOrDefault(),
+                        })
+                        .FirstOrDefaultAsync();
+
+                    if (refData?.ReferrerUserId != null)
+                    {
+                        await transactionService.CreateTransactionAsync(
+                            settings.BonusSettings.ReferrerBonus,
+                            TransactionType.ReferrerBonus,
+                            receiverId: refData.ReferrerUserId,
+                            uniqueKey: $"referrerBonus-from-{user.Id}"
+                        );
+                    }
                 }
 
                 headersData.UserId = user.Id;
