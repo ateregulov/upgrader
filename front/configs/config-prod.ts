@@ -8,7 +8,7 @@ const defaultConfig: Config = {
   AppVersion: '1.0.1',
 }
 
-const useLocalEndpoints = true
+const useLocalEndpoints = false
 
 const config: Config = {
   ...defaultConfig,
@@ -17,7 +17,7 @@ const config: Config = {
         ApiUrl: 'http://localhost:5455'
       }
     : {
-        ApiUrl: 'https://upgrader.tlabs.cc'
+        ApiUrl: 'https://upgrader-back.tlabs.cc'
     }),
 }
 

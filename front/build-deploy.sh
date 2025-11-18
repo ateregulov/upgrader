@@ -1,11 +1,9 @@
 #!/bin/bash
 
-# Поставьте useLocalEndpoints = false в config.ts перед деплоем
-
 set -e  # Прерывать выполнение при ошибках
 
 # Определение переменных
-PROJECT_NAME="hh"
+PROJECT_NAME="upgrader-front"
 TAR_FILE="$PROJECT_NAME.tar.gz"
 TAR_FILE_LOCAL="publish/$PROJECT_NAME.tar.gz"
 DEPLOY_DIR="/var/deploy/$PROJECT_NAME"
@@ -14,6 +12,8 @@ REMOTE_HOST="178.63.82.62"
 REMOTE_PATH="/var/deploy"
 SSH_PORT=222
 
+cp configs/config-prod.ts config.ts
+
 npm run build
 
 rm -f publish/$TAR_FILE
@@ -21,6 +21,8 @@ rm -f publish/$TAR_FILE
 mkdir -p publish
 
 tar -czf publish/$TAR_FILE -C dist .
+
+cp configs/config-local.ts config.ts
 
 # Передача файлов на удалённый сервер
 scp -P $SSH_PORT $TAR_FILE_LOCAL $REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH
