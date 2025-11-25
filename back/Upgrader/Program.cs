@@ -70,6 +70,7 @@ builder.Services.AddScoped<CoursesService>();
 builder.Services.AddScoped<CoursePurchaseService>();
 
 builder.Services.AddScoped<TaskService>();
+builder.Services.AddScoped<TaskResultService>();
 
 var app = builder.Build();
 
