@@ -7,6 +7,7 @@ using Upgrader.Auth;
 using Upgrader.Bot;
 using Upgrader.Db;
 using Upgrader.Features.Balance;
+using Upgrader.Features.PublicApi;
 using Upgrader.Features.ReferralSystem;
 using Upgrader.Features.Transactions;
 
@@ -26,6 +27,7 @@ builder.Services.AddSwaggerGen(c =>
     var appName = Assembly.GetEntryAssembly()?.GetName().Name;
     string xmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{appName}.xml");
     c.IncludeXmlComments(xmlPath);
+    c.OperationFilter<PublicApiOperationFilter>();
 });
 
 builder.Services.AddCors(options =>
