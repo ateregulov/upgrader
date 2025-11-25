@@ -13,11 +13,13 @@ public class ReferralsController : ControllerBase
 {
     private readonly MyContext _dbContext;
     private readonly AppSettings _appSettings;
+    private readonly RefCodeService _refCodeService;
 
-    public ReferralsController(MyContext dbContext, IOptions<AppSettings> appSettingsOpt)
+    public ReferralsController(MyContext dbContext, IOptions<AppSettings> appSettingsOpt, RefCodeService refCodeService)
     {
         _dbContext = dbContext;
         _appSettings = appSettingsOpt.Value;
+        _refCodeService = refCodeService;
     }
 
     [HttpPost("info")]
@@ -36,14 +38,7 @@ public class ReferralsController : ControllerBase
 
         if (refCode == null)
         {
-            refCode = new RefCode
-            {
-                UserId = user.Id,
-                Code = RefCodeConverter.IntToBase60(user.TelegramId.Value),
-            };
-
-            await _dbContext.RefCodes.AddAsync(refCode);
-            await _dbContext.SaveChangesAsync();
+            refCode = await _refCodeService.CreateAsync(user);
 
             var info = new RefInfo
             {
