@@ -10,6 +10,7 @@ using Upgrader.Features.Balance;
 using Upgrader.Features.Courses;
 using Upgrader.Features.PublicApi;
 using Upgrader.Features.ReferralSystem;
+using Upgrader.Features.Tasks;
 using Upgrader.Features.Transactions;
 
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -66,6 +67,8 @@ builder.Services.AddHostedService<BotBackgroundService>();
 builder.Services.AddSingleton<RefCodeConverter>();
 
 builder.Services.AddScoped<CoursesService>();
+
+builder.Services.AddScoped<TaskService>();
 
 var app = builder.Build();
 
