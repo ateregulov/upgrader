@@ -22,6 +22,24 @@ public class ReferralsController : ControllerBase
         _refCodeService = refCodeService;
     }
 
+    [HttpPost("link")]
+    public async Task<IActionResult> GetLink()
+    {
+        var headersData = await this.GetHeadersData();
+        if (headersData == null)
+            return Unauthorized();
+
+        var user = await _dbContext.Users
+           .FirstOrDefaultAsync(u => u.TelegramId == headersData.TelegramId);
+
+        var refCode = await _dbContext.RefCodes.Where(x => x.IsActive).FirstOrDefaultAsync(x => x.UserId == user.Id);
+        refCode ??= await _refCodeService.CreateAsync(user);
+
+        var link = _refCodeService.GetLinkByCode(refCode.Code);
+
+        return Ok(link);
+    }
+
     [HttpPost("info")]
     public async Task<IActionResult> GetOrCreateRefCode()
     {
@@ -33,8 +51,6 @@ public class ReferralsController : ControllerBase
             .FirstOrDefaultAsync(u => u.TelegramId == headersData.TelegramId);
 
         var refCode = await _dbContext.RefCodes.Where(x => x.IsActive).FirstOrDefaultAsync(x => x.UserId == user.Id);
-
-        var startOfLink = $"https://t.me/{_appSettings.TelegramBotName}?start=";
 
         if (refCode == null)
         {
