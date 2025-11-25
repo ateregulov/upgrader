@@ -7,6 +7,7 @@ using Upgrader.Auth;
 using Upgrader.Bot;
 using Upgrader.Db;
 using Upgrader.Features.Balance;
+using Upgrader.Features.Courses;
 using Upgrader.Features.PublicApi;
 using Upgrader.Features.ReferralSystem;
 using Upgrader.Features.Transactions;
@@ -63,6 +64,8 @@ builder.Services.AddSingleton<AppBot>();
 builder.Services.AddHostedService<BotBackgroundService>();
 
 builder.Services.AddSingleton<RefCodeConverter>();
+
+builder.Services.AddScoped<CoursesService>();
 
 var app = builder.Build();
 
