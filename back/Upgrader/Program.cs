@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using OrisAppBack.Features.Bot;
@@ -18,6 +19,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseKestrel(serverOptions =>
 {
     serverOptions.ListenAnyIP(5455);
+});
+
+builder.Services.AddSwaggerGen(c =>
+{
+    var appName = Assembly.GetEntryAssembly()?.GetName().Name;
+    string xmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{appName}.xml");
+    c.IncludeXmlComments(xmlPath);
 });
 
 builder.Services.AddCors(options =>
@@ -55,6 +63,12 @@ builder.Services.AddHostedService<BotBackgroundService>();
 builder.Services.AddSingleton<RefCodeConverter>();
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseMiddleware<AuthMiddleware>();
 
