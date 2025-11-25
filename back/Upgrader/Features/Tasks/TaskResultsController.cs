@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Upgrader.Auth;
+using static Upgrader.Features.Tasks.TaskResultService;
 
 namespace Upgrader.Features.Tasks;
 
@@ -8,11 +8,11 @@ namespace Upgrader.Features.Tasks;
 [Route("api/task-results")]
 public class TaskResultsController : ControllerBase
 {
-    private readonly MyContext _dbContext;
+    private readonly TaskResultService _taskResultService;
 
-    public TaskResultsController(MyContext dbContext)
+    public TaskResultsController(TaskResultService taskResultService)
     {
-        _dbContext = dbContext;
+        _taskResultService = taskResultService;
     }
 
     [HttpPost]
@@ -22,55 +22,20 @@ public class TaskResultsController : ControllerBase
         if (headersData == null)
             return Unauthorized();
 
-        if (!string.IsNullOrEmpty(dto.Text) && dto.ListItems.Count != 0)
-            return BadRequest("Нельзя мешать ответы для конкретного типа задания");
+        var result = await _taskResultService.CreateResultAsync(dto, headersData.UserId);
 
-        var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.TelegramId == headersData.TelegramId);
-
-        var task = await _dbContext
-            .Tasks.Include(x => x.Course)
-            .ThenInclude(x => x.Purchases.Where(x => x.UserId == user.Id))
-            .FirstOrDefaultAsync(x => x.Id == dto.TaskId);
-
-        if (task == null)
-            return NotFound("Задание не найдено");
-        if (task.Course.Purchases.Count == 0)
-            return BadRequest("Нельзя отвечать на задания курса, который вы не купили");
-
-        if (task.Type == TaskType.TextList)
+        if (!result.Succeeded)
         {
-            if (dto.ListItems.Count == 0)
-                return BadRequest("Нельзя не вводить список элементов для задания такого типа");
-
-            dto.ListItems = dto.ListItems.Where(x => !string.IsNullOrEmpty(x)).ToList();
-            if (task.MinListItemsCount.HasValue && dto.ListItems.Count < task.MinListItemsCount)
-                return BadRequest($"Нельзя вводить меньше {task.MinListItemsCount} элементов для задания такого типа");
-            if (task.MaxListItemsCount.HasValue && dto.ListItems.Count > task.MaxListItemsCount)
-                return BadRequest($"Нельзя вводить больше {task.MaxListItemsCount} элементов для задания такого типа");
+            if (result.ErrorsString.Contains("не найдено"))
+            {
+                return NotFound(result.ErrorsString);
+            }
+            else
+            {
+                return BadRequest(result.ErrorsString);
+            }
         }
 
-        if (task.Type == TaskType.Text && string.IsNullOrEmpty(dto.Text))
-            return BadRequest("Нельзя не вводить текст для задания такого типа");
-
-
-        var taskResult = new TaskResult
-        {
-            UserId = user.Id,
-            TaskId = dto.TaskId,
-            Text = dto.Text,
-            ListItems = dto.ListItems,
-        };
-
-        await _dbContext.TaskResults.AddAsync(taskResult);
-        await _dbContext.SaveChangesAsync();
-
         return Ok();
-    }
-
-    public class CreateTaskResultDto
-    {
-        public Guid TaskId { get; set; }
-        public string Text { get; set; }
-        public List<string> ListItems { get; set; } = [];
     }
 }
