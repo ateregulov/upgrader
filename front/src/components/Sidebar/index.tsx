@@ -94,7 +94,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   to='/courses'
                   onClick={() => setSidebarOpen(false)}
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes('statistics') && 'bg-graydark dark:bg-meta-4'
+                    pathname.includes('courses') && 'bg-graydark dark:bg-meta-4'
                   }`}
                 >
                   Курсы
@@ -103,10 +103,19 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   to='/referral'
                   onClick={() => setSidebarOpen(false)}
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes('statistics') && 'bg-graydark dark:bg-meta-4'
+                    pathname.includes('referral') && 'bg-graydark dark:bg-meta-4'
                   }`}
                 >
                   Реферальная программа
+                </NavLink>
+                <NavLink
+                  to='/wallet'
+                  onClick={() => setSidebarOpen(false)}
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('wallet') && 'bg-graydark dark:bg-meta-4'
+                  }`}
+                >
+                  Кошелек
                 </NavLink>
               </li>
             </ul>
