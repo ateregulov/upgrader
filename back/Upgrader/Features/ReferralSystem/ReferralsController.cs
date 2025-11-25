@@ -42,7 +42,7 @@ public class ReferralsController : ControllerBase
 
             var info = new RefInfo
             {
-                Link = $"{startOfLink}{refCode.Code}",
+                Link = _refCodeService.GetLinkByCode(refCode.Code),
                 RefBonusAmount = _appSettings.BonusSettings.ReferrerBonus,
             };
 
@@ -61,7 +61,7 @@ public class ReferralsController : ControllerBase
 
         var resultInfo = new RefInfo
         {
-            Link = $"{startOfLink}{refCode.Code}",
+            Link = _refCodeService.GetLinkByCode(refCode.Code),
             ReferralsCount = referralsCount,
             RefBonusAmount = _appSettings.BonusSettings.ReferrerBonus,
             EarnedFromReferrals = earned,
