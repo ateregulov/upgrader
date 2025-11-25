@@ -32,7 +32,7 @@ function ReferralBlock() {
       <div className='bg-gray-800 rounded-xl p-6'>
         <h2 className='text-xl font-semibold text-white mb-4'>Ваша реферальная ссылка</h2>
 
-        <div className='flex flex-col sm:flex-row gap-4 justify-center sm:items-end'>
+        <div className='flex gap-4 justify-center sm:items-end'>
           <input
             disabled
             type='text'
