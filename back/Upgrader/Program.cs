@@ -67,6 +67,7 @@ builder.Services.AddHostedService<BotBackgroundService>();
 builder.Services.AddSingleton<RefCodeConverter>();
 
 builder.Services.AddScoped<CoursesService>();
+builder.Services.AddScoped<CoursePurchaseService>();
 
 builder.Services.AddScoped<TaskService>();
 
