@@ -53,6 +53,7 @@ builder.Services.AddSingleton<AppBot>();
 builder.Services.AddHostedService<BotBackgroundService>();
 
 builder.Services.AddSingleton<RefCodeConverter>();
+builder.Services.AddScoped<RefCodeService>();
 
 var app = builder.Build();
 

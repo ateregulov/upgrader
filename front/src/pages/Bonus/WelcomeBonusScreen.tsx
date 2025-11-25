@@ -3,6 +3,7 @@ import Api from '../../../api'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { toast } from '@/hooks/use-toast'
+import ReferralBlock from './ReferralBlock'
 
 const WelcomeBonusScreen: React.FC = () => {
   const navigate = useNavigate()
@@ -37,6 +38,7 @@ const WelcomeBonusScreen: React.FC = () => {
           Вам начислен приветственный бонус <span className='font-semibold text-green-400'>{registerBonus} рублей</span>.
           Используйте его для покупок внутри приложения — открывайте новые курсы, задания и уровни.
         </p>
+        <ReferralBlock />
 
         <Button
           onClick={handleContinue}

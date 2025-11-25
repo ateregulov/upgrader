@@ -13,11 +13,31 @@ public class ReferralsController : ControllerBase
 {
     private readonly MyContext _dbContext;
     private readonly AppSettings _appSettings;
+    private readonly RefCodeService _refCodeService;
 
-    public ReferralsController(MyContext dbContext, IOptions<AppSettings> appSettingsOpt)
+    public ReferralsController(MyContext dbContext, IOptions<AppSettings> appSettingsOpt, RefCodeService refCodeService)
     {
         _dbContext = dbContext;
         _appSettings = appSettingsOpt.Value;
+        _refCodeService = refCodeService;
+    }
+
+    [HttpPost("link")]
+    public async Task<IActionResult> GetLink()
+    {
+        var headersData = await this.GetHeadersData();
+        if (headersData == null)
+            return Unauthorized();
+
+        var user = await _dbContext.Users
+           .FirstOrDefaultAsync(u => u.TelegramId == headersData.TelegramId);
+
+        var refCode = await _dbContext.RefCodes.Where(x => x.IsActive).FirstOrDefaultAsync(x => x.UserId == user.Id);
+        refCode ??= await _refCodeService.CreateAsync(user);
+
+        var link = _refCodeService.GetLinkByCode(refCode.Code);
+
+        return Ok(link);
     }
 
     [HttpPost("info")]
@@ -32,22 +52,13 @@ public class ReferralsController : ControllerBase
 
         var refCode = await _dbContext.RefCodes.Where(x => x.IsActive).FirstOrDefaultAsync(x => x.UserId == user.Id);
 
-        var startOfLink = $"https://t.me/{_appSettings.TelegramBotName}?start=";
-
         if (refCode == null)
         {
-            refCode = new RefCode
-            {
-                UserId = user.Id,
-                Code = RefCodeConverter.IntToBase60(user.TelegramId.Value),
-            };
-
-            await _dbContext.RefCodes.AddAsync(refCode);
-            await _dbContext.SaveChangesAsync();
+            refCode = await _refCodeService.CreateAsync(user);
 
             var info = new RefInfo
             {
-                Link = $"{startOfLink}{refCode.Code}",
+                Link = _refCodeService.GetLinkByCode(refCode.Code),
                 RefBonusAmount = _appSettings.BonusSettings.ReferrerBonus,
             };
 
@@ -66,7 +77,7 @@ public class ReferralsController : ControllerBase
 
         var resultInfo = new RefInfo
         {
-            Link = $"{startOfLink}{refCode.Code}",
+            Link = _refCodeService.GetLinkByCode(refCode.Code),
             ReferralsCount = referralsCount,
             RefBonusAmount = _appSettings.BonusSettings.ReferrerBonus,
             EarnedFromReferrals = earned,
