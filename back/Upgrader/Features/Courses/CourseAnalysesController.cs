@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using OrisAppBack.Other.Settings;
 using Upgrader.Auth;
 using Upgrader.Features.Balance;
+using Upgrader.Features.Tasks;
 using Upgrader.Features.Transactions;
 
 namespace Upgrader.Features.Courses;
@@ -13,17 +14,19 @@ namespace Upgrader.Features.Courses;
 public class CourseAnalysesController : ControllerBase
 {
     private readonly MyContext _dbContext;
+    private readonly TaskService _taskService;
     private readonly BalanceService _balanceService;
     private readonly TransactionService _transactionService;
     private readonly decimal _analyzePrice;
 
     public CourseAnalysesController(MyContext dbContext, BalanceService balanceService,
-        IOptions<AppSettings> appSettingsOpt, TransactionService transactionService)
+        IOptions<AppSettings> appSettingsOpt, TransactionService transactionService, TaskService taskService)
     {
         _dbContext = dbContext;
         _balanceService = balanceService;
         _analyzePrice = appSettingsOpt.Value.CourseSettings.AnalysisPrice;
         _transactionService = transactionService;
+        _taskService = taskService;
     }
 
     [HttpGet("price")]
@@ -66,6 +69,12 @@ public class CourseAnalysesController : ControllerBase
         if (!isCourseExists)
         {
             return NotFound("Курс не найден");
+        }
+
+        var tasks = await _taskService.GetTasksAsync(dto.CourseId, headersData.UserId);
+        if (!tasks.All(x => x.IsCompleted))
+        {
+            return BadRequest("Нельзя создать анализ курса не ответив на все задания");
         }
 
         var balance = await _balanceService.GetBalanceAsync(headersData.UserId);
