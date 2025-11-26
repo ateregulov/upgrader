@@ -12,4 +12,5 @@ public class CourseAnalyzeRequest
     public Course Course { get; set; }
     public Guid UserId { get; set; }
     public User User { get; set; }
+    public DateTimeOffset Created { get; set; } = DateTimeOffset.UtcNow;
 }

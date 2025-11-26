@@ -57,6 +57,9 @@ namespace Upgrader.Migrations
                     b.Property<Guid>("CourseId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
@@ -74,6 +77,9 @@ namespace Upgrader.Migrations
                 {
                     b.Property<Guid>("RequestId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Message")
                         .HasColumnType("text");
@@ -330,7 +336,7 @@ namespace Upgrader.Migrations
             modelBuilder.Entity("Upgrader.Features.Courses.CourseAnalyzeRequest", b =>
                 {
                     b.HasOne("Upgrader.Features.Courses.Course", "Course")
-                        .WithMany()
+                        .WithMany("AnalyzeRequests")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -349,8 +355,8 @@ namespace Upgrader.Migrations
             modelBuilder.Entity("Upgrader.Features.Courses.CourseAnalyzeResult", b =>
                 {
                     b.HasOne("Upgrader.Features.Courses.CourseAnalyzeRequest", "Request")
-                        .WithMany()
-                        .HasForeignKey("RequestId")
+                        .WithOne("Result")
+                        .HasForeignKey("Upgrader.Features.Courses.CourseAnalyzeResult", "RequestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -440,9 +446,16 @@ namespace Upgrader.Migrations
 
             modelBuilder.Entity("Upgrader.Features.Courses.Course", b =>
                 {
+                    b.Navigation("AnalyzeRequests");
+
                     b.Navigation("Purchases");
 
                     b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("Upgrader.Features.Courses.CourseAnalyzeRequest", b =>
+                {
+                    b.Navigation("Result");
                 });
 
             modelBuilder.Entity("Upgrader.Features.Tasks.Task", b =>

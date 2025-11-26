@@ -13,4 +13,5 @@ public class CourseAnalyzeResult
     [JsonIgnore]
     public CourseAnalyzeRequest Request { get; set; }
     public string Message { get; set; }
+    public DateTimeOffset Created { get; set; } = DateTimeOffset.UtcNow;
 }
