@@ -42,6 +42,7 @@ public class CourseAnalysesResultsController : ControllerBase
         var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.TelegramId == headersData.TelegramId);
 
         var request = await _dbContext.CourseAnalyzeRequests
+            .Include(x => x.Course)
             .FirstOrDefaultAsync(x => x.Id == dto.RequestId);
         if (request == null)
             return NotFound();
@@ -55,7 +56,10 @@ public class CourseAnalysesResultsController : ControllerBase
         await _dbContext.CourseAnalyzeResults.AddAsync(result);
         await _dbContext.SaveChangesAsync();
 
-        await _appBot.SendMessageAsync(dto.Message, user.TelegramId.Value);
+        await _appBot.SendMessageAsync(
+            $"Анализ ваших ответов в рамках курса: {request.Course.Title} завершен.",
+            user.TelegramId.Value
+        );
 
         return Ok();
     }
