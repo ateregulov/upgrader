@@ -6,7 +6,7 @@ using Upgrader.Auth;
 namespace Upgrader.Features.Courses;
 
 [ApiController]
-[Route("api/courses/{courseId}/analyses/results")]
+[Route("api/courses-analyses/results")]
 public class CourseAnalysesResultsController : ControllerBase
 {
     private readonly MyContext _dbContext;
@@ -19,13 +19,11 @@ public class CourseAnalysesResultsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get(Guid courseId)
     {
         var headersData = await this.GetHeadersData();
         if (headersData == null)
             return Unauthorized();
-
-        var courseId = Guid.Parse(RouteData.Values["courseId"].ToString());
 
         var result = await _dbContext.CourseAnalyzeResults
             .Where(x => x.Request.CourseId == courseId && x.Request.UserId == headersData.UserId)

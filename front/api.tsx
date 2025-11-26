@@ -125,6 +125,6 @@ const Api = {
     BaseApi.post<void>(`api/course-analyses`, { courseId }),
 
   getCourseAnalyzeResult: async(courseId: string): Promise<CourseAnalyzeResult | null> =>
-    BaseApi.get<CourseAnalyzeResult | null>(`api/courses/${courseId}/analyses/results`),
+    BaseApi.get<CourseAnalyzeResult | null>(`api/courses-analyses/results?courseId=${courseId}`),
 }
 export default Api
