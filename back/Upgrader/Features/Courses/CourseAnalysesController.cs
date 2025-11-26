@@ -26,6 +26,25 @@ public class CourseAnalysesController : ControllerBase
         _transactionService = transactionService;
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetAnalyze(Guid courseId)
+    {
+        var headersData = await this.GetHeadersData();
+        if (headersData == null)
+            return Unauthorized();
+
+        var isCourseExists = await _dbContext.Courses.AnyAsync(x => x.Id == courseId);
+        if (!isCourseExists)
+        {
+            return NotFound("Курс не найден");
+        }
+
+        var request = await _dbContext.CourseAnalyzeRequests
+            .FirstOrDefaultAsync(x => x.CourseId == courseId && x.UserId == headersData.UserId);
+
+        return Ok(request);
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateRequest(CreateRequestDto dto)
     {

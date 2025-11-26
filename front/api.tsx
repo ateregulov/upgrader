@@ -115,7 +115,10 @@ const Api = {
   getBalance: async(): Promise<number> =>
     BaseApi.get<number>(`api/balances/me`),
 
+  getCourseAnalyzeRequest: async(courseId: string): Promise<any> =>
+    BaseApi.get<any>(`api/course-analyses?courseId=${courseId}`),
+
   createCourseAnalyzeRequest: async(courseId: string): Promise<void> =>
-    BaseApi.post<void>(`api/course-analyzes`, { courseId }),
+    BaseApi.post<void>(`api/course-analyses`, { courseId }),
 }
 export default Api
