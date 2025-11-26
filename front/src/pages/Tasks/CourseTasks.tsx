@@ -12,6 +12,8 @@ const CourseTasksMock: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([])
   const [isAllPassed, setIsAllPassed] = useState<boolean>(false)
   const [isAnalyzeRequestExists, setIsAnalyzeRequestExists] = useState<boolean>(false)
+  const [analyzePrice, setAnalyzePrice] = useState<number>(0)
+
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -27,11 +29,30 @@ const CourseTasksMock: React.FC = () => {
       setIsAllPassed(allTasksPassed)
       setTasks(tasks)
 
-      if (allTasksPassed) await fetchAnalyzeRequest()
+      if (allTasksPassed){
+        const analyzeRequest = fetchAnalyzeRequest()
+        const price = fetchAnalyzePrice()
+        await Promise.all([analyzeRequest, price])
+      } 
     } catch (error) {
       toast({
         title: 'Ошибка',
         description: 'Не удалось получить задания курса',
+        variant: 'error',
+      })
+    }
+  }
+
+  const fetchAnalyzePrice = async () => {
+    if (!courseId) return
+
+    try {
+      const price = await Api.getCourseAnalyzePrice()
+      setAnalyzePrice(price)
+    } catch (error) {
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось получить стоимость анализа курса',
         variant: 'error',
       })
     }
@@ -120,7 +141,7 @@ const CourseTasksMock: React.FC = () => {
               >
                 Создать запрос на анализ ответов специалистом
               </Button>
-              <div className='text-center mt-4 text-gray-500'>Стоимость разбора: 500 ₽</div>
+              <div className='text-center mt-4 text-gray-500'>Стоимость разбора: {analyzePrice} ₽</div>
             </div>
           ) : (
             <Button
