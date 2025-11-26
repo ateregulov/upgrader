@@ -16,6 +16,7 @@ import Payment from './pages/Courses/Payment'
 import WelcomeBonusScreen from './pages/Bonus/WelcomeBonusScreen'
 import RegistrationLayout from './layout/RegistrationLayout'
 import ReferralScreen from './pages/ReferralScreen/ReferralScreen'
+import CourseAnalyzePage from './pages/CourseAnalyze/CourseAnalyzePage'
 
 
 function App() {
@@ -106,6 +107,15 @@ function App() {
             <DefaultLayout>
               <PageTitle title='Task' />
               <TaskPage />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path='/courses/:courseId/analyze'
+          element={
+            <DefaultLayout>
+              <PageTitle title='Course Analyze' />
+              <CourseAnalyzePage />
             </DefaultLayout>
           }
         />

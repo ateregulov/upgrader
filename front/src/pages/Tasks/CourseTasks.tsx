@@ -102,7 +102,7 @@ const CourseTasksMock: React.FC = () => {
   }
 
   const handleAnalyzeRequestClick = () => {
-    navigate(`/tasks/${courseId}/analyze`)
+    navigate(`/courses/${courseId}/analyze`)
   }
 
   const handleTaskClick = (taskId: string) => {
