@@ -20,4 +20,5 @@ public enum TransactionType
     ReferrerBonus = 101,
 
     CoursePurchase = 200,
+    CourseAnalyze = 201,
 }
