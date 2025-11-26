@@ -114,5 +114,8 @@ const Api = {
 
   getBalance: async(): Promise<number> =>
     BaseApi.get<number>(`api/balances/me`),
+
+  createCourseAnalyzeRequest: async(courseId: string): Promise<void> =>
+    BaseApi.post<void>(`api/course-analyzes`, { courseId }),
 }
 export default Api

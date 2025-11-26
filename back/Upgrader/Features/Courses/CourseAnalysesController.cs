@@ -1,0 +1,70 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using OrisAppBack.Other.Settings;
+using Upgrader.Auth;
+using Upgrader.Features.Balance;
+using Upgrader.Features.Transactions;
+
+namespace Upgrader.Features.Courses;
+
+[ApiController]
+[Route("api/course-analyses")]
+public class CourseAnalysesController : ControllerBase
+{
+    private readonly MyContext _dbContext;
+    private readonly BalanceService _balanceService;
+    private readonly TransactionService _transactionService;
+    private readonly decimal _analyzePrice;
+
+    public CourseAnalysesController(MyContext dbContext, BalanceService balanceService,
+        IOptions<AppSettings> appSettingsOpt, TransactionService transactionService)
+    {
+        _dbContext = dbContext;
+        _balanceService = balanceService;
+        _analyzePrice = appSettingsOpt.Value.CourseSettings.AnalysisPrice;
+        _transactionService = transactionService;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateRequest(CreateRequestDto dto)
+    {
+        var headersData = await this.GetHeadersData();
+        if (headersData == null)
+            return Unauthorized();
+
+        var isCourseExists = await _dbContext.Courses.AnyAsync(x => x.Id == dto.CourseId);
+        if (!isCourseExists)
+        {
+            return NotFound("Курс не найден");
+        }
+
+        var balance = await _balanceService.GetBalanceAsync(headersData.UserId);
+        if (balance < _analyzePrice)
+        {
+            return BadRequest("INFLUENT_BALANCE");
+        }
+
+        await _transactionService.CreateTransactionAsync(
+            _analyzePrice,
+            TransactionType.CourseAnalyze,
+            senderId: headersData.UserId,
+            uniqueKey: $"CourseAnalyze-{dto.CourseId}-{headersData.UserId}"
+        );
+
+        var courseAnalyzeRequest = new CourseAnalyzeRequest
+        {
+            CourseId = dto.CourseId,
+            UserId = headersData.UserId,
+        };
+        await _dbContext.CourseAnalyzeRequests.AddAsync(courseAnalyzeRequest);
+        await _dbContext.SaveChangesAsync();
+
+        return Ok();
+    }
+
+    public class CreateRequestDto
+    {
+        public Guid CourseId { get; set; }
+    }
+}
