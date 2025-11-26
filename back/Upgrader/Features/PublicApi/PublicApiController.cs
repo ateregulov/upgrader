@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Upgrader.Auth;
 using Upgrader.Features.Courses;
 using Upgrader.Features.Tasks;
+using static Upgrader.Features.Courses.CoursePurchasesController;
 using static Upgrader.Features.Tasks.TaskResultService;
 
 namespace Upgrader.Features.PublicApi;
@@ -107,10 +108,5 @@ public class PublicApiController : ControllerBase
         }
 
         return Ok();
-    }
-
-    public class PurchaseCourseDto
-    {
-        public Guid CourseId { get; set; }
     }
 }
