@@ -73,8 +73,8 @@ public class AppBot
         {
             _logger.LogError(
                 "Error on sending bot's message:{Msg} to user with tgId:{TgId} msg:{Msg}",
-                tgId,
                 msg,
+                tgId,
                 ex.Message
             );
             return QueryResult<Message>.CreateFailed("error");
