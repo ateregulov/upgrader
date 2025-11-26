@@ -19,6 +19,8 @@ public class MyContext : DbContext
     public DbSet<CoursePurchase> CoursePurchases { get; set; }
     public DbSet<Referral> Referrals { get; set; }
     public DbSet<RefCode> RefCodes { get; set; }
+    public DbSet<CourseAnalyzeRequest> CourseAnalyzeRequests { get; set; }
+    public DbSet<CourseAnalyzeResult> CourseAnalyzeResults { get; set; }
 
     public MyContext(DbContextOptions<MyContext> options, IConfiguration configuration)
         : base(options)
