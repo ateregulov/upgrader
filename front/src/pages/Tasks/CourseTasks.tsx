@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Task } from './types'
+import { CourseAnalyzeRequest, Task } from './types'
 import TaskCard from './TaskCard'
 import { useNavigate, useParams } from 'react-router-dom'
 import Api from '../../../api'
@@ -11,7 +11,7 @@ const CourseTasksMock: React.FC = () => {
   const { courseId } = useParams()
   const [tasks, setTasks] = useState<Task[]>([])
   const [isAllPassed, setIsAllPassed] = useState<boolean>(false)
-  const [isAnalyzeRequestExists, setIsAnalyzeRequestExists] = useState<boolean>(false)
+  const [analyzeRequest, setAnalyzeRequest] = useState<CourseAnalyzeRequest>()
   const [analyzePrice, setAnalyzePrice] = useState<number>(0)
 
   const navigate = useNavigate()
@@ -29,11 +29,11 @@ const CourseTasksMock: React.FC = () => {
       setIsAllPassed(allTasksPassed)
       setTasks(tasks)
 
-      if (allTasksPassed){
+      if (allTasksPassed) {
         const analyzeRequest = fetchAnalyzeRequest()
         const price = fetchAnalyzePrice()
         await Promise.all([analyzeRequest, price])
-      } 
+      }
     } catch (error) {
       toast({
         title: 'Ошибка',
@@ -62,8 +62,8 @@ const CourseTasksMock: React.FC = () => {
     if (!courseId) return
 
     try {
-      const request = await Api.getCourseAnalyzeRequest(courseId)
-      setIsAnalyzeRequestExists(request != '')
+      const request = await Api.getCourseAnalyzeRequest(courseId, true)
+      setAnalyzeRequest(request)
     } catch (error) {
       toast({
         title: 'Ошибка',
@@ -120,7 +120,7 @@ const CourseTasksMock: React.FC = () => {
       </div>
       <div className='text-center mt-7'>
         {isAllPassed &&
-          (!isAnalyzeRequestExists ? (
+          (!analyzeRequest ? (
             <div>
               <Button
                 onClick={createAnalyzeRequest}
@@ -142,6 +142,12 @@ const CourseTasksMock: React.FC = () => {
                 Создать запрос на анализ ответов специалистом
               </Button>
               <div className='text-center mt-4 text-gray-500'>Стоимость разбора: {analyzePrice} ₽</div>
+            </div>
+          ) : analyzeRequest.result == null ? (
+            <div>
+              <div className='text-center mt-4 text-gray-500'>
+                Ваша заявка на разбор курса находится в обработке. Мы пришлем вам уведомление как только разбор будет готов.
+              </div>
             </div>
           ) : (
             <Button

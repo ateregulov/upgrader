@@ -33,7 +33,7 @@ public class CourseAnalysesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAnalyze(Guid courseId)
+    public async Task<IActionResult> GetAnalyze(Guid courseId, bool includeResult = false)
     {
         var headersData = await this.GetHeadersData();
         if (headersData == null)
@@ -45,7 +45,11 @@ public class CourseAnalysesController : ControllerBase
             return NotFound("Курс не найден");
         }
 
-        var request = await _dbContext.CourseAnalyzeRequests
+        IQueryable<CourseAnalyzeRequest> requestQuery = _dbContext.CourseAnalyzeRequests;
+        if (includeResult)
+            requestQuery = requestQuery.Include(x => x.Result);
+
+        var request = await requestQuery
             .FirstOrDefaultAsync(x => x.CourseId == courseId && x.UserId == headersData.UserId);
 
         return Ok(request);

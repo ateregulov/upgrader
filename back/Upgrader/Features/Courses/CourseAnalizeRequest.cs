@@ -7,6 +7,7 @@ namespace Upgrader.Features.Courses;
 public class CourseAnalyzeRequest
 {
     public Guid Id { get; set; }
+    public CourseAnalyzeResult Result { get; set; }
     public Guid CourseId { get; set; }
     public Course Course { get; set; }
     public Guid UserId { get; set; }

@@ -1,3 +1,5 @@
+import { Course } from "../Courses/types";
+
 export interface Task {
     id: string;
     courseId: string;
@@ -29,4 +31,16 @@ export enum TaskType
 {
     Text = 10,
     TextList = 20,
+}
+
+export interface CourseAnalyzeRequest {
+    result?: CourseAnalyzeResult;
+    courseId: string;
+    course?: Course;
+}
+
+export interface CourseAnalyzeResult {
+    requestId: string;
+    request: CourseAnalyzeRequest;
+    message: string;
 }
