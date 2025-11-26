@@ -26,6 +26,12 @@ public class CourseAnalysesController : ControllerBase
         _transactionService = transactionService;
     }
 
+    [HttpGet("price")]
+    public async Task<IActionResult> GetPrice()
+    {
+        return Ok(_analyzePrice);
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetAnalyze(Guid courseId)
     {

@@ -118,6 +118,9 @@ const Api = {
   getCourseAnalyzeRequest: async(courseId: string): Promise<any> =>
     BaseApi.get<any>(`api/course-analyses?courseId=${courseId}`),
 
+  getCourseAnalyzePrice: async(): Promise<number> =>
+    BaseApi.get<number>(`api/course-analyses/price`),
+
   createCourseAnalyzeRequest: async(courseId: string): Promise<void> =>
     BaseApi.post<void>(`api/course-analyses`, { courseId }),
 }
