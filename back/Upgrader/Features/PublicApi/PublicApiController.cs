@@ -65,7 +65,7 @@ public class PublicApiController : ControllerBase
     [HttpPost("course-purchases")]
     public async Task<IActionResult> PurchaseCourse(PurchaseCourseDto dto)
     {
-        var result = await _coursePurchaseService.BuyAsync(dto.CourseId, dto.UserId);
+        var result = await _coursePurchaseService.BuyAsync(dto.CourseId, dto.UserId, false);
 
         if (!result.Succeeded)
         {

@@ -22,7 +22,8 @@ public class CoursePurchaseService
         _transactionService = transactionService;
     }
 
-    public async Task<QueryResult> BuyAsync(Guid courseId, Guid userId, CancellationToken cancellationToken = default)
+    public async Task<QueryResult> BuyAsync(Guid courseId, Guid userId, bool isLocal = true,
+        CancellationToken cancellationToken = default)
     {
         var course = await _dbContext
             .Courses.Where(x => x.Id == courseId)
@@ -31,29 +32,33 @@ public class CoursePurchaseService
             return QueryResult.CreateFailed("Курс не найден");
 
         var isCourseAlreadyBought = await _dbContext.CoursePurchases.AnyAsync(x =>
-            x.UserId == userId && x.CourseId == courseId,
+            isLocal ? x.UserId == userId : x.ExternalUserId == userId && x.CourseId == courseId,
             cancellationToken
         );
         if (isCourseAlreadyBought)
             return QueryResult.CreateFailed("Курс уже был куплен");
 
-        var balance = await _balanceService.GetBalanceAsync(userId, cancellationToken);
-        if (course.Price > balance)
-            return QueryResult.CreateFailed("Недостаточно средств на счету");
+        if (isLocal)
+        {
+            var balance = await _balanceService.GetBalanceAsync(userId, cancellationToken);
+            if (course.Price > balance)
+                return QueryResult.CreateFailed("Недостаточно средств на счету");
 
-        await _transactionService.CreateTransactionAsync(
-            amount: course.Price,
-            type: TransactionType.CoursePurchase,
-            senderId: userId,
-            uniqueKey: $"course-purchase-{userId}-{courseId}",
-            cancellationToken: cancellationToken
-        );
+            await _transactionService.CreateTransactionAsync(
+                amount: course.Price,
+                type: TransactionType.CoursePurchase,
+                senderId: userId,
+                uniqueKey: $"course-purchase-{userId}-{courseId}",
+                cancellationToken: cancellationToken
+            );
+        }
 
         await _dbContext.CoursePurchases.AddAsync(
             new CoursePurchase
             {
                 Id = Guid.NewGuid(),
-                UserId = userId,
+                UserId = isLocal ? userId : null,
+                ExternalUserId = isLocal ? null : userId,
                 CourseId = courseId,
                 PaidAmount = course.Price,
             }, cancellationToken
