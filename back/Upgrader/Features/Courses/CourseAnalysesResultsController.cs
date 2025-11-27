@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrisAppBack.Features.Bot;
 using Upgrader.Auth;
+using static Upgrader.Features.Courses.CourseAnalyzeResultService;
 
 namespace Upgrader.Features.Courses;
 
@@ -10,12 +10,12 @@ namespace Upgrader.Features.Courses;
 public class CourseAnalysesResultsController : ControllerBase
 {
     private readonly MyContext _dbContext;
-    private readonly AppBot _appBot;
+    private readonly CourseAnalyzeResultService _resultService;
 
-    public CourseAnalysesResultsController(MyContext dbContext, AppBot appBot)
+    public CourseAnalysesResultsController(MyContext dbContext, CourseAnalyzeResultService resultService)
     {
         _dbContext = dbContext;
-        _appBot = appBot;
+        _resultService = resultService;
     }
 
     [HttpGet]
@@ -25,9 +25,7 @@ public class CourseAnalysesResultsController : ControllerBase
         if (headersData == null)
             return Unauthorized();
 
-        var result = await _dbContext.CourseAnalyzeResults
-            .Where(x => x.Request.CourseId == courseId && x.Request.UserId == headersData.UserId)
-            .FirstOrDefaultAsync();
+        var result = await _resultService.GetAsync(courseId, headersData.UserId);
 
         return Ok(result);
     }
@@ -41,25 +39,22 @@ public class CourseAnalysesResultsController : ControllerBase
 
         var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.TelegramId == headersData.TelegramId);
 
-        var request = await _dbContext.CourseAnalyzeRequests
-            .Include(x => x.Course)
-            .FirstOrDefaultAsync(x => x.Id == dto.RequestId);
-        if (request == null)
-            return NotFound();
-
-        var result = new CourseAnalyzeResult
-        {
-            RequestId = dto.RequestId,
-            Message = dto.Message,
-        };
-
-        await _dbContext.CourseAnalyzeResults.AddAsync(result);
-        await _dbContext.SaveChangesAsync();
-
-        await _appBot.SendMessageAsync(
-            $"Анализ ваших ответов в рамках курса: {request.Course.Title} завершен.",
-            user.TelegramId.Value
+        var result = await _resultService.CreateAsync(
+            new CourseAnalyzeResultDto
+            {
+                RequestId = dto.RequestId,
+                Message = dto.Message,
+                UserId = user.Id,
+                TgId = user.TelegramId,
+            }
         );
+
+        if (!result.Succeeded)
+        {
+            if (result.ErrorsString.Contains("не найдена"))
+                return NotFound(result.ErrorsString);
+            return BadRequest(result.ErrorsString);
+        }
 
         return Ok();
     }
