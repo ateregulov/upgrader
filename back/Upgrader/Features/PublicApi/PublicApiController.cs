@@ -39,7 +39,7 @@ public class PublicApiController : ControllerBase
     public async Task<IActionResult> GetCourse(Guid userId, Guid id)
     {
         var course = await _coursesService
-            .GetByIdAsync(userId, id);
+            .GetByIdAsync(userId, id, false);
 
         return Ok(course);
     }

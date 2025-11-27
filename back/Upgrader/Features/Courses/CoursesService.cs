@@ -49,6 +49,7 @@ public class CoursesService
     public async Task<Course> GetByIdAsync(
         Guid userId,
         Guid courseId,
+        bool isLocal = true,
         CancellationToken cancellationToken = default
     )
     {
@@ -60,9 +61,17 @@ public class CoursesService
                 ShortDescription = x.ShortDescription,
                 LongDescription = x.LongDescription,
                 Price = x.Price,
-                IsBought = x.Purchases.Any(x => x.UserId == userId),
+                IsBought = isLocal
+                    ? x.Purchases.Any(x => x.UserId == userId)
+                    : _dbContext.CoursePurchases.Any(x =>
+                        x.ExternalUserId == userId && x.CourseId == courseId
+                    ),
                 TasksCount = x.Tasks.Count,
-                FinishedTasksCount = x.Tasks.Count(x => x.Results.Any(x => x.UserId == userId)),
+                FinishedTasksCount = isLocal
+                    ? x.Tasks.Count(x => x.Results.Any(x => x.UserId == userId))
+                    : _dbContext.TaskResults.Count(x =>
+                        x.ExternalUserId == userId && x.Task.CourseId == courseId
+                    ),
             })
             .FirstOrDefaultAsync(x => x.Id == courseId, cancellationToken);
 
