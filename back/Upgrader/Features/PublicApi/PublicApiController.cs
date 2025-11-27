@@ -48,7 +48,7 @@ public class PublicApiController : ControllerBase
     public async Task<IActionResult> GetTasks(Guid userId, Guid courseId)
     {
         var tasks = await _taskService
-            .GetTasksAsync(courseId, userId);
+            .GetTasksAsync(courseId, userId, false);
 
         return Ok(tasks);
     }
@@ -57,7 +57,7 @@ public class PublicApiController : ControllerBase
     public async Task<IActionResult> GetTask(Guid userId, Guid id, bool includeResult)
     {
         var task = await _taskService
-            .GetByIdAsync(id, userId, includeResult);
+            .GetByIdAsync(id, userId, includeResult, false);
 
         return Ok(task);
     }

@@ -14,6 +14,7 @@ public class TaskService
     public async Task<List<Task>> GetTasksAsync(
         Guid courseId,
         Guid userId,
+        bool isLocal = true,
         CancellationToken cancellationToken = default
     )
     {
@@ -24,8 +25,14 @@ public class TaskService
         if (course == null)
             return null;
 
+        var tasksResultIds = await _dbContext.TaskResults
+            .Where(x => isLocal ? x.UserId == userId : x.ExternalUserId == userId && x.Task.CourseId == courseId)
+            .Select(x => x.TaskId)
+            .ToHashSetAsync(cancellationToken);
+
         var tasks = await _dbContext
             .Tasks.Where(x => x.CourseId == courseId)
+            .OrderBy(x => x.Order)
             .Select(x => new Task
             {
                 Id = x.Id,
@@ -36,8 +43,8 @@ public class TaskService
                 Type = x.Type,
                 MaxListItemsCount = x.MaxListItemsCount,
                 MinListItemsCount = x.MinListItemsCount,
-                IsUnlocked = x.Results.Where(x => x.UserId == userId).Any(),
-                IsCompleted = x.Results.Where(x => x.UserId == userId).Any(),
+                IsUnlocked = tasksResultIds.Contains(x.Id),
+                IsCompleted = tasksResultIds.Contains(x.Id),
             })
             .ToListAsync(cancellationToken);
 
@@ -57,13 +64,14 @@ public class TaskService
         Guid taskId,
         Guid userId,
         bool includeResults,
+        bool isLocal = true,
         CancellationToken cancellationToken = default
     )
     {
         IQueryable<Task> taskQuery = _dbContext.Tasks;
         if (includeResults)
         {
-            taskQuery = taskQuery.Include(x => x.Results.Where(x => x.UserId == userId));
+            taskQuery = taskQuery.Include(x => x.Results.Where(x => isLocal ? x.UserId == userId : x.ExternalUserId == userId));
         }
 
         var task = await taskQuery.FirstOrDefaultAsync(x => x.Id == taskId, cancellationToken);
