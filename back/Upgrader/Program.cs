@@ -72,6 +72,8 @@ builder.Services.AddScoped<CoursePurchaseService>();
 builder.Services.AddScoped<TaskService>();
 builder.Services.AddScoped<TaskResultService>();
 
+builder.Services.AddScoped<CourseAnalyzeService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
