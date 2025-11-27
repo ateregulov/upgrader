@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Upgrader.Auth;
 
 namespace Upgrader.Features.Courses;
@@ -8,11 +7,11 @@ namespace Upgrader.Features.Courses;
 [Route("api/courses")]
 public class CoursesController : ControllerBase
 {
-    private readonly MyContext _dbContext;
+    private readonly CoursesService _coursesService;
 
-    public CoursesController(MyContext dbContext)
+    public CoursesController(CoursesService coursesService)
     {
-        _dbContext = dbContext;
+        _coursesService = coursesService;
     }
 
     [HttpGet]
@@ -22,22 +21,8 @@ public class CoursesController : ControllerBase
         if (headersData == null)
             return Unauthorized();
 
-        var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.TelegramId == headersData.TelegramId);
-
-        var courses = await _dbContext
-            .Courses.Select(x => new Course
-            {
-                Id = x.Id,
-                Title = x.Title,
-                ShortDescription = x.ShortDescription,
-                LongDescription = x.LongDescription,
-                Price = x.Price,
-                IsBought = x.Purchases.Any(x => x.UserId == user.Id),
-                TasksCount = x.Tasks.Count,
-                FinishedTasksCount = x.Tasks.Count(x => x.Results.Any(x => x.UserId == user.Id)),
-            })
-            .OrderByDescending(x => x.IsBought)
-            .ToListAsync();
+        var courses = await _coursesService
+            .GetAsync(headersData.UserId);
 
         return Ok(courses);
     }
@@ -49,22 +34,9 @@ public class CoursesController : ControllerBase
         if (headersData == null)
             return Unauthorized();
 
-        var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.TelegramId == headersData.TelegramId);
+        var course = await _coursesService
+            .GetByIdAsync(headersData.UserId, id);
 
-        var courses = await _dbContext
-            .Courses.Select(x => new Course
-            {
-                Id = x.Id,
-                Title = x.Title,
-                ShortDescription = x.ShortDescription,
-                LongDescription = x.LongDescription,
-                Price = x.Price,
-                IsBought = x.Purchases.Any(x => x.UserId == user.Id),
-                TasksCount = x.Tasks.Count,
-                FinishedTasksCount = x.Tasks.Count(x => x.Results.Any(x => x.UserId == user.Id))
-            })
-            .FirstOrDefaultAsync(x => x.Id == id);
-
-        return Ok(courses);
+        return Ok(course);
     }
 }
