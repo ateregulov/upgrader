@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Upgrader.Auth;
 using Upgrader.Features.Courses;
 using Upgrader.Features.Tasks;
 using static Upgrader.Features.Courses.CoursePurchasesController;
@@ -16,14 +15,19 @@ public class PublicApiController : ControllerBase
     private readonly TaskService _taskService;
     private readonly CoursePurchaseService _coursePurchaseService;
     private readonly TaskResultService _taskResultService;
+    private readonly CourseAnalyzeResultService _courseAnalyzeResultService;
+    private readonly CourseAnalyzeService _courseAnalyzeService;
 
     public PublicApiController(CoursesService coursesService, TaskService taskService,
-        CoursePurchaseService coursePurchaseService, TaskResultService taskResultService)
+        CoursePurchaseService coursePurchaseService, TaskResultService taskResultService,
+        CourseAnalyzeResultService courseAnalyzeResultService, CourseAnalyzeService courseAnalyzeService)
     {
         _coursesService = coursesService;
         _taskService = taskService;
         _coursePurchaseService = coursePurchaseService;
         _taskResultService = taskResultService;
+        _courseAnalyzeResultService = courseAnalyzeResultService;
+        _courseAnalyzeService = courseAnalyzeService;
     }
 
     [HttpGet("courses")]
@@ -60,6 +64,43 @@ public class PublicApiController : ControllerBase
             .GetByIdAsync(id, userId, includeResult, false);
 
         return Ok(task);
+    }
+
+    [HttpGet("analyze-result")]
+    public async Task<IActionResult> GetCourseAnalyzeResult(Guid userId, Guid courseId)
+    {
+        var result = await _courseAnalyzeResultService.GetAsync(courseId, userId, false);
+
+        return Ok(result);
+    }
+
+    [HttpGet("analyze-request")]
+    public async Task<IActionResult> GetCourseAnalyzeRequest(Guid userId, Guid courseId)
+    {
+        var result = await _courseAnalyzeService.GetAsync(courseId, userId, false);
+
+        return Ok(result);
+    }
+
+    [HttpGet("analyze-request-price")]
+    public async Task<IActionResult> GetCourseAnalyzeRequestPrice()
+    {
+        return Ok(_courseAnalyzeService.GetAnalyzePrice());
+    }
+
+    [HttpPost("analyze-request")]
+    public async Task<IActionResult> CreateAnalyzeRequest(Guid courseId, Guid userId)
+    {
+        var result = await _courseAnalyzeService.CreateRequestAsync(courseId, userId, false);
+
+        if (!result.Succeeded)
+        {
+            if (result.ErrorsString.Contains("не найден"))
+                return NotFound(result.ErrorsString);
+            return BadRequest(result.ErrorsString);
+        }
+
+        return Ok();
     }
 
     [HttpPost("course-purchases")]
