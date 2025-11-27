@@ -13,9 +13,21 @@ public class CoursesService
 
     public async Task<List<Course>> GetAsync(
         Guid userId,
+        bool isLocal = true,
         CancellationToken cancellationToken = default
     )
     {
+        var boughtCoursesIds = await _dbContext
+            .CoursePurchases
+            .Where(x => isLocal ? x.UserId == userId : x.ExternalUserId == userId)
+            .Select(x => x.CourseId)
+            .ToHashSetAsync(cancellationToken);
+
+        var finishedTasksCounts = await _dbContext.TaskResults
+            .Where(x => isLocal ? x.UserId == userId : x.ExternalUserId == userId)
+            .GroupBy(x => x.Task.CourseId)
+            .ToDictionaryAsync(x => x.Key, x => x.Count(), cancellationToken);
+
         var courses = await _dbContext
             .Courses.Select(x => new Course
             {
@@ -24,9 +36,9 @@ public class CoursesService
                 ShortDescription = x.ShortDescription,
                 LongDescription = x.LongDescription,
                 Price = x.Price,
-                IsBought = x.Purchases.Any(x => x.UserId == userId),
+                IsBought = boughtCoursesIds.Contains(x.Id),
                 TasksCount = x.Tasks.Count,
-                FinishedTasksCount = x.Tasks.Count(x => x.Results.Any(x => x.UserId == userId)),
+                FinishedTasksCount = finishedTasksCounts.GetValueOrDefault(x.Id, 0),
             })
             .OrderByDescending(x => x.IsBought)
             .ToListAsync(cancellationToken);
