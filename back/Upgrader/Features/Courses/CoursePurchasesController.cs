@@ -40,6 +40,7 @@ public class CoursePurchasesController : ControllerBase
 
     public class PurchaseCourseDto
     {
+        public Guid UserId { get; set; }
         public Guid CourseId { get; set; }
     }
 }

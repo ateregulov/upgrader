@@ -67,6 +67,7 @@ public class TaskResultService
 
     public class CreateTaskResultDto
     {
+        public Guid UserId { get; set; }
         public Guid TaskId { get; set; }
         public string Text { get; set; }
         public List<string> ListItems { get; set; } = [];
