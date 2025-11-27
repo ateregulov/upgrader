@@ -65,11 +65,7 @@ public class PublicApiController : ControllerBase
     [HttpPost("course-purchases")]
     public async Task<IActionResult> PurchaseCourse(PurchaseCourseDto dto)
     {
-        var headersData = await this.GetHeadersData();
-        if (headersData == null)
-            return Unauthorized();
-
-        var result = await _coursePurchaseService.BuyAsync(dto.CourseId, headersData.UserId);
+        var result = await _coursePurchaseService.BuyAsync(dto.CourseId, dto.UserId);
 
         if (!result.Succeeded)
         {
@@ -89,11 +85,7 @@ public class PublicApiController : ControllerBase
     [HttpPost("task-result")]
     public async Task<IActionResult> CreateTaskResultAsync(CreateTaskResultDto dto)
     {
-        var headersData = await this.GetHeadersData();
-        if (headersData == null)
-            return Unauthorized();
-
-        var result = await _taskResultService.CreateResultAsync(dto, headersData.UserId);
+        var result = await _taskResultService.CreateResultAsync(dto, dto.UserId);
 
         if (!result.Succeeded)
         {
