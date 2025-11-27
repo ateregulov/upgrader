@@ -13,14 +13,14 @@ public class TaskResultService
     }
 
     public async Task<QueryResult> CreateResultAsync(CreateTaskResultDto dto, Guid userId,
-        CancellationToken cancellationToken = default)
+        bool isLocal = true, CancellationToken cancellationToken = default)
     {
         if (!string.IsNullOrEmpty(dto.Text) && dto.ListItems.Count != 0)
             return QueryResult.CreateFailed("Нельзя мешать ответы для конкретного типа задания");
 
         var task = await _dbContext
             .Tasks.Include(x => x.Course)
-            .ThenInclude(x => x.Purchases.Where(x => x.UserId == userId))
+            .ThenInclude(x => x.Purchases.Where(x => isLocal ? x.UserId == userId : x.ExternalUserId == userId))
             .FirstOrDefaultAsync(x => x.Id == dto.TaskId, cancellationToken);
 
         if (task == null)
@@ -53,7 +53,8 @@ public class TaskResultService
 
         var taskResult = new TaskResult
         {
-            UserId = userId,
+            UserId = isLocal ? userId : null,
+            ExternalUserId = isLocal ? null : userId,
             TaskId = dto.TaskId,
             Text = dto.Text,
             ListItems = dto.ListItems,

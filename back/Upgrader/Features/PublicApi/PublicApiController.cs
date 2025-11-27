@@ -85,7 +85,7 @@ public class PublicApiController : ControllerBase
     [HttpPost("task-result")]
     public async Task<IActionResult> CreateTaskResultAsync(CreateTaskResultDto dto)
     {
-        var result = await _taskResultService.CreateResultAsync(dto, dto.UserId);
+        var result = await _taskResultService.CreateResultAsync(dto, dto.UserId, false);
 
         if (!result.Succeeded)
         {
