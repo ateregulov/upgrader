@@ -6,6 +6,7 @@ import Api from '../../../api'
 import { toast } from '@/hooks/use-toast'
 import { Button } from '@mui/material'
 import { isAxiosError } from 'axios'
+import { useBalance } from '@/Contexts/BalanceContext'
 
 const CourseTasksMock: React.FC = () => {
   const { courseId } = useParams()
@@ -13,6 +14,7 @@ const CourseTasksMock: React.FC = () => {
   const [isAllPassed, setIsAllPassed] = useState<boolean>(false)
   const [analyzeRequest, setAnalyzeRequest] = useState<CourseAnalyzeRequest>()
   const [analyzePrice, setAnalyzePrice] = useState<number>(0)
+  const { syncBalance } = useBalance()
 
   const navigate = useNavigate()
 
@@ -84,6 +86,7 @@ const CourseTasksMock: React.FC = () => {
         variant: 'success',
       })
       fetchAnalyzeRequest()
+      syncBalance()
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 400 && error.response?.data == 'INFLUENT_BALANCE') {
         toast({
