@@ -4,6 +4,7 @@ import { createContext, ReactNode, useContext, useEffect, useState } from 'react
 interface BalanceContext {
   balance: number
   setBalance: (balance: number) => void
+  syncBalance: () => void
 }
 
 const balanceContext = createContext<BalanceContext | undefined>(undefined)
@@ -22,7 +23,7 @@ export const BalanceProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {}
   }
 
-  return <balanceContext.Provider value={{ balance, setBalance }}>{children}</balanceContext.Provider>
+  return <balanceContext.Provider value={{ balance, setBalance, syncBalance: getBalance }}>{children}</balanceContext.Provider>
 }
 
 export const useBalance = () => {
