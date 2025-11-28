@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OrisAppBack.Features.Bot;
 using TLabs.DotnetHelpers;
+using Upgrader.Features.PsynetApi;
 
 namespace Upgrader.Features.Courses;
 
@@ -8,11 +9,13 @@ public class CourseAnalyzeResultService
 {
     private readonly MyContext _dbContext;
     private readonly AppBot _appBot;
+    private readonly BotClient _botClient;
 
-    public CourseAnalyzeResultService(MyContext dbContext, AppBot appBot)
+    public CourseAnalyzeResultService(MyContext dbContext, AppBot appBot, BotClient botClient)
     {
         _dbContext = dbContext;
         _appBot = appBot;
+        _botClient = botClient;
     }
 
     public async Task<CourseAnalyzeResult> GetAsync(Guid courseId, Guid userId, bool isLocal = true,
@@ -29,7 +32,7 @@ public class CourseAnalyzeResultService
         return result;
     }
 
-    public async Task<QueryResult> CreateAsync(CourseAnalyzeResultDto dto, bool isLocal = true,
+    public async Task<QueryResult> CreateAsync(CourseAnalyzeResultDto dto,
         CancellationToken cancellationToken = default)
     {
         var request = await _dbContext
@@ -43,7 +46,7 @@ public class CourseAnalyzeResultService
         await _dbContext.CourseAnalyzeResults.AddAsync(result, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        if (isLocal)
+        if (request.UserId.HasValue)
         {
             await _appBot.SendMessageAsync(
                 $"Анализ ваших ответов в рамках курса: {request.Course.Title} завершен.",
@@ -53,7 +56,14 @@ public class CourseAnalyzeResultService
         }
         else
         {
-            //TODO: add psynet notification
+            await _botClient.SendMessageAsync(
+                new BotMessageDto
+                {
+                    Message = $"Анализ ответов в рамках курса: {request.Course.Title} завершен.",
+                    UserId = request.ExternalUserId.Value
+                },
+                cancellationToken
+            );
         }
 
         return QueryResult.CreateSucceeded();
