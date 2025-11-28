@@ -8,6 +8,7 @@ using Upgrader.Bot;
 using Upgrader.Db;
 using Upgrader.Features.Balance;
 using Upgrader.Features.Courses;
+using Upgrader.Features.PsynetApi;
 using Upgrader.Features.PublicApi;
 using Upgrader.Features.ReferralSystem;
 using Upgrader.Features.Tasks;
@@ -51,6 +52,8 @@ builder.Services.AddCors(options =>
     );
 });
 
+builder.Services.AddHttpClient();
+
 builder.Services.Configure<AppSettings>(builder.Configuration);
 
 builder.Services.AddControllers();
@@ -74,6 +77,8 @@ builder.Services.AddScoped<TaskResultService>();
 
 builder.Services.AddScoped<CourseAnalyzeService>();
 builder.Services.AddScoped<CourseAnalyzeResultService>();
+
+builder.Services.AddSingleton<BotClient>();
 
 var app = builder.Build();
 
