@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Upgrader.Auth;
-using Upgrader.Features.Balance;
-using Upgrader.Features.Transactions;
 
 namespace Upgrader.Features.Courses;
 
@@ -10,19 +7,11 @@ namespace Upgrader.Features.Courses;
 [Route("api/course-purchases")]
 public class CoursePurchasesController : ControllerBase
 {
-    private readonly MyContext _dbContext;
-    private readonly BalanceService _balanceService;
-    private readonly TransactionService _transactionService;
+    private readonly CoursePurchaseService _coursePurchaseService;
 
-    public CoursePurchasesController(
-        MyContext dbContext,
-        BalanceService balanceService,
-        TransactionService transactionService
-    )
+    public CoursePurchasesController(CoursePurchaseService coursePurchaseService)
     {
-        _dbContext = dbContext;
-        _balanceService = balanceService;
-        _transactionService = transactionService;
+        _coursePurchaseService = coursePurchaseService;
     }
 
     [HttpPost]
@@ -32,49 +21,26 @@ public class CoursePurchasesController : ControllerBase
         if (headersData == null)
             return Unauthorized();
 
-        var course = await _dbContext
-            .Courses.Where(x => x.Id == dto.CourseId)
-            .FirstOrDefaultAsync();
-        if (course == null)
-            return NotFound("Курс не найден");
+        var result = await _coursePurchaseService.BuyAsync(dto.CourseId, headersData.UserId);
 
-        var user = await _dbContext.Users.SingleOrDefaultAsync(x =>
-            x.TelegramId == headersData.TelegramId
-        );
-
-        var isCourseAlreadyBought = await _dbContext.CoursePurchases.AnyAsync(x =>
-            x.UserId == user.Id && x.CourseId == dto.CourseId
-        );
-        if (isCourseAlreadyBought)
-            return BadRequest("Курс уже был куплен");
-
-        var balance = await _balanceService.GetBalanceAsync(user.Id);
-        if (course.Price > balance)
-            return BadRequest("Недостаточно средств на счету");
-
-        await _transactionService.CreateTransactionAsync(
-            amount: course.Price,
-            type: TransactionType.CoursePurchase,
-            senderId: user.Id,
-            uniqueKey: $"course-purchase-{user.Id}-{dto.CourseId}"
-        );
-
-        await _dbContext.CoursePurchases.AddAsync(
-            new CoursePurchase
+        if (!result.Succeeded)
+        {
+            if (result.ErrorsString.Contains("Курс не найден"))
             {
-                Id = Guid.NewGuid(),
-                UserId = user.Id,
-                CourseId = dto.CourseId,
-                PaidAmount = course.Price,
+                return NotFound(result.ErrorsString);
             }
-        );
-        await _dbContext.SaveChangesAsync();
+            else
+            {
+                return BadRequest(result.ErrorsString);
+            }
+        }
 
         return Ok();
     }
 
     public class PurchaseCourseDto
     {
+        public Guid UserId { get; set; }
         public Guid CourseId { get; set; }
     }
 }

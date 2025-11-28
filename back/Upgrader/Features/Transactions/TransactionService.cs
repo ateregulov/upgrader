@@ -28,6 +28,5 @@ public class TransactionService
         };
 
         await _dbContext.Transactions.AddAsync(tx, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

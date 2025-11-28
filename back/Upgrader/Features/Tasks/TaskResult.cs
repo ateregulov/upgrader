@@ -5,10 +5,12 @@ using Upgrader.Users;
 namespace Upgrader.Features.Tasks;
 
 [Index(nameof(UserId), nameof(TaskId), IsUnique = true)]
+[Index(nameof(ExternalUserId), nameof(TaskId), IsUnique = true)]
 public class TaskResult
 {
     public Guid Id { get; set; }
-    public Guid UserId { get; set; }
+    public Guid? UserId { get; set; }
+    public Guid? ExternalUserId { get; set; }
 
     [JsonIgnore]
     public User User { get; set; }

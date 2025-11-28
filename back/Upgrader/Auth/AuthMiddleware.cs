@@ -127,7 +127,6 @@ public class AuthMiddleware
 
                     _dbContext.Users.Add(user);
                     _dbContext.TgProfiles.Add(tgProfile);
-                    await _dbContext.SaveChangesAsync();
                     await transactionService.CreateTransactionAsync(
                         settings.BonusSettings.RegisterBonus,
                         TransactionType.RegisterBonus,
@@ -155,6 +154,8 @@ public class AuthMiddleware
                             uniqueKey: $"referrerBonus-from-{user.Id}"
                         );
                     }
+
+                    await _dbContext.SaveChangesAsync();
                 }
 
                 headersData.UserId = user.Id;

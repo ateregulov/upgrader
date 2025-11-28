@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Upgrader.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20251126195359_CourseAnalyze")]
+    partial class CourseAnalyze
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,18 +63,12 @@ namespace Upgrader.Migrations
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("ExternalUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("CourseId", "ExternalUserId")
-                        .IsUnique();
 
                     b.HasIndex("CourseId", "UserId")
                         .IsUnique();
@@ -104,16 +101,13 @@ namespace Upgrader.Migrations
                     b.Property<Guid>("CourseId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ExternalUserId")
-                        .HasColumnType("uuid");
-
                     b.Property<decimal>("PaidAmount")
                         .HasColumnType("numeric");
 
                     b.Property<DateTimeOffset>("PurchasedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -218,9 +212,6 @@ namespace Upgrader.Migrations
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("ExternalUserId")
-                        .HasColumnType("uuid");
-
                     b.PrimitiveCollection<List<string>>("ListItems")
                         .HasColumnType("text[]");
 
@@ -230,15 +221,12 @@ namespace Upgrader.Migrations
                     b.Property<string>("Text")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TaskId");
-
-                    b.HasIndex("ExternalUserId", "TaskId")
-                        .IsUnique();
 
                     b.HasIndex("UserId", "TaskId")
                         .IsUnique();
@@ -358,7 +346,9 @@ namespace Upgrader.Migrations
 
                     b.HasOne("Upgrader.Users.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Course");
 
@@ -386,7 +376,9 @@ namespace Upgrader.Migrations
 
                     b.HasOne("Upgrader.Users.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Course");
 
@@ -425,7 +417,9 @@ namespace Upgrader.Migrations
 
                     b.HasOne("Upgrader.Users.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Task");
 

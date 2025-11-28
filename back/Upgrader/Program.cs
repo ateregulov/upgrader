@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using OrisAppBack.Features.Bot;
@@ -6,7 +7,11 @@ using Upgrader.Auth;
 using Upgrader.Bot;
 using Upgrader.Db;
 using Upgrader.Features.Balance;
+using Upgrader.Features.Courses;
+using Upgrader.Features.PsynetApi;
+using Upgrader.Features.PublicApi;
 using Upgrader.Features.ReferralSystem;
+using Upgrader.Features.Tasks;
 using Upgrader.Features.Transactions;
 
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -18,6 +23,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseKestrel(serverOptions =>
 {
     serverOptions.ListenAnyIP(5455);
+});
+
+builder.Services.AddSwaggerGen(c =>
+{
+    var appName = Assembly.GetEntryAssembly()?.GetName().Name;
+    string xmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{appName}.xml");
+    c.IncludeXmlComments(xmlPath);
+    c.OperationFilter<PublicApiOperationFilter>();
 });
 
 builder.Services.AddCors(options =>
@@ -39,6 +52,8 @@ builder.Services.AddCors(options =>
     );
 });
 
+builder.Services.AddHttpClient();
+
 builder.Services.Configure<AppSettings>(builder.Configuration);
 
 builder.Services.AddControllers();
@@ -54,7 +69,24 @@ builder.Services.AddHostedService<BotBackgroundService>();
 
 builder.Services.AddSingleton<RefCodeConverter>();
 
+builder.Services.AddScoped<CoursesService>();
+builder.Services.AddScoped<CoursePurchaseService>();
+
+builder.Services.AddScoped<TaskService>();
+builder.Services.AddScoped<TaskResultService>();
+
+builder.Services.AddScoped<CourseAnalyzeService>();
+builder.Services.AddScoped<CourseAnalyzeResultService>();
+
+builder.Services.AddSingleton<BotClient>();
+
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseMiddleware<AuthMiddleware>();
 
