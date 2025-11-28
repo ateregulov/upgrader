@@ -20,9 +20,9 @@ public class CourseAnalyzeResultService
     {
         var result = await _dbContext
             .CourseAnalyzeResults.Where(x =>
-                x.Request.CourseId == courseId && isLocal
+                x.Request.CourseId == courseId && (isLocal
                     ? x.Request.UserId == userId
-                    : x.Request.ExternalUserId == userId
+                    : x.Request.ExternalUserId == userId)
             )
             .FirstOrDefaultAsync(cancellationToken);
 

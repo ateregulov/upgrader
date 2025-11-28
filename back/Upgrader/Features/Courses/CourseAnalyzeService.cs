@@ -50,7 +50,7 @@ public class CourseAnalyzeService
             requestQuery = requestQuery.Include(x => x.Result);
 
         var request = await requestQuery.FirstOrDefaultAsync(
-            x => x.CourseId == courseId && isLocal ? x.UserId == userId : x.ExternalUserId == userId,
+            x => x.CourseId == courseId && (isLocal ? x.UserId == userId : x.ExternalUserId == userId),
             cancellationToken
         );
 

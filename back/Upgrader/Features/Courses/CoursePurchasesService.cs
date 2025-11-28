@@ -32,7 +32,7 @@ public class CoursePurchaseService
             return QueryResult.CreateFailed("Курс не найден");
 
         var isCourseAlreadyBought = await _dbContext.CoursePurchases.AnyAsync(x =>
-            isLocal ? x.UserId == userId : x.ExternalUserId == userId && x.CourseId == courseId,
+            (isLocal ? x.UserId == userId : x.ExternalUserId == userId) && x.CourseId == courseId,
             cancellationToken
         );
         if (isCourseAlreadyBought)

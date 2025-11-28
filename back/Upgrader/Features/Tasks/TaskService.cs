@@ -26,7 +26,7 @@ public class TaskService
             return null;
 
         var tasksResultIds = await _dbContext.TaskResults
-            .Where(x => isLocal ? x.UserId == userId : x.ExternalUserId == userId && x.Task.CourseId == courseId)
+            .Where(x => (isLocal ? x.UserId == userId : x.ExternalUserId == userId) && x.Task.CourseId == courseId)
             .Select(x => x.TaskId)
             .ToHashSetAsync(cancellationToken);
 
