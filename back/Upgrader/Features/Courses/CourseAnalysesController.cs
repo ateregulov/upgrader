@@ -35,7 +35,7 @@ public class CourseAnalysesController : ControllerBase
             return BadRequest(requestResult.ErrorsString);
         }
 
-        return Ok(requestResult.Data);
+        return Ok(requestResult.Data.Id == Guid.Empty ? null : requestResult.Data);
     }
 
     [HttpPost]
@@ -45,7 +45,11 @@ public class CourseAnalysesController : ControllerBase
         if (headersData == null)
             return Unauthorized();
 
-        var result = await _analyzeService.CreateRequestAsync(dto.CourseId, headersData.UserId);
+        var result = await _analyzeService.CreateRequestAsync(new CreateAnalyzeRequestDto
+        {
+            CourseId = dto.CourseId,
+            UserId = headersData.UserId
+        }, false);
 
         if (!result.Succeeded)
         {

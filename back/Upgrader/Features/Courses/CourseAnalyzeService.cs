@@ -54,26 +54,25 @@ public class CourseAnalyzeService
             cancellationToken
         );
 
-        return QueryResult<CourseAnalyzeRequest>.CreateSucceeded(request);
+        return QueryResult<CourseAnalyzeRequest>.CreateSucceeded(request ?? new CourseAnalyzeRequest());
     }
 
     public async Task<QueryResult> CreateRequestAsync(
-        Guid courseId,
-        Guid userId,
+        CreateAnalyzeRequestDto dto,
         bool isLocal = true,
         CancellationToken cancellationToken = default
     )
     {
         var isCourseExists = await _dbContext.Courses.AnyAsync(
-            x => x.Id == courseId,
+            x => x.Id == dto.CourseId,
             cancellationToken
         );
         if (!isCourseExists)
             return QueryResult.CreateFailed("Курс не найден");
 
         var tasks = await _taskService.GetTasksAsync(
-            courseId,
-            userId,
+            dto.CourseId,
+            dto.UserId,
             isLocal: isLocal,
             cancellationToken: cancellationToken
         );
@@ -85,7 +84,7 @@ public class CourseAnalyzeService
         if (isLocal)
         {
             var balance = await _balanceService.GetBalanceAsync(
-                userId,
+                dto.UserId,
                 cancellationToken: cancellationToken
             );
             if (balance < _analyzePrice)
@@ -96,21 +95,28 @@ public class CourseAnalyzeService
             await _transactionService.CreateTransactionAsync(
                 _analyzePrice,
                 TransactionType.CourseAnalyze,
-                senderId: userId,
-                uniqueKey: $"CourseAnalyze-{courseId}-{userId}",
+                senderId: dto.UserId,
+                uniqueKey: $"CourseAnalyze-{dto.CourseId}-{dto.UserId}",
                 cancellationToken: cancellationToken
             );
         }
 
         var courseAnalyzeRequest = new CourseAnalyzeRequest
         {
-            CourseId = courseId,
-            UserId = isLocal ? userId : null,
-            ExternalUserId = isLocal ? null : userId,
+            CourseId = dto.CourseId,
+            UserId = isLocal ? dto.UserId : null,
+            ExternalUserId = isLocal ? null : dto.UserId,
         };
         await _dbContext.CourseAnalyzeRequests.AddAsync(courseAnalyzeRequest, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return QueryResult.CreateSucceeded();
     }
+
+}
+
+public class CreateAnalyzeRequestDto
+{
+    public Guid CourseId { get; set; }
+    public Guid UserId { get; set; }
 }

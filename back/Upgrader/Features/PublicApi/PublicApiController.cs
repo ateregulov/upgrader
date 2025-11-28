@@ -75,11 +75,18 @@ public class PublicApiController : ControllerBase
     }
 
     [HttpGet("analyze-request")]
-    public async Task<IActionResult> GetCourseAnalyzeRequest(Guid userId, Guid courseId)
+    public async Task<IActionResult> GetCourseAnalyzeRequest(Guid userId, Guid courseId, bool includeResult = false)
     {
-        var result = await _courseAnalyzeService.GetAsync(courseId, userId, false);
+        var result = await _courseAnalyzeService.GetAsync(courseId, userId, includeResult, false);
 
-        return Ok(result);
+        if (!result.Succeeded)
+        {
+            if (result.ErrorsString.Contains("не найден"))
+                return NotFound(result.ErrorsString);
+            return BadRequest(result.ErrorsString);
+        }
+
+        return Ok(result.Data.Id == Guid.Empty ? null : result.Data);
     }
 
     [HttpGet("analyze-request-price")]
@@ -89,9 +96,9 @@ public class PublicApiController : ControllerBase
     }
 
     [HttpPost("analyze-request")]
-    public async Task<IActionResult> CreateAnalyzeRequest(Guid courseId, Guid userId)
+    public async Task<IActionResult> CreateAnalyzeRequest(CreateAnalyzeRequestDto dto)
     {
-        var result = await _courseAnalyzeService.CreateRequestAsync(courseId, userId, false);
+        var result = await _courseAnalyzeService.CreateRequestAsync(dto, false);
 
         if (!result.Succeeded)
         {
