@@ -7,6 +7,7 @@ namespace OrisAppBack.Other.Settings
         public BonusSettings BonusSettings { get; set; }
         public SecuritySettings SecuritySettings { get; set; }
         public CourseSettings CourseSettings { get; set; }
+        public IntegrationsSettings IntegrationSettings { get; set; }
     }
 
     public class BonusSettings
@@ -23,5 +24,16 @@ namespace OrisAppBack.Other.Settings
     public class CourseSettings
     {
         public decimal AnalysisPrice { get; set; }
+    }
+
+    public class IntegrationsSettings
+    {
+        public PsynetSettings Psynet { get; set; }
+    }
+
+    public class PsynetSettings
+    {
+        public string BaseUrl { get; set; }
+        public string PrivateKey { get; set; }
     }
 }
