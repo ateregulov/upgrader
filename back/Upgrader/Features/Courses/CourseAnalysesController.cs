@@ -49,7 +49,7 @@ public class CourseAnalysesController : ControllerBase
         {
             CourseId = dto.CourseId,
             UserId = headersData.UserId
-        }, false);
+        });
 
         if (!result.Succeeded)
         {
